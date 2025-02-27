@@ -35,40 +35,40 @@ ls()
 # Equation (10) of the main text, integral of q_l for Type 1 AD
 MB.est.ADtype1 = function(theta, x, w, alpha)
 {  
- Wn = diag(w); Xn = as.matrix(x); 
- subgroup.Xn = as.matrix(x[,-4]); theta=as.vector(theta); 
- alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model
- Wn = Wn * w.DRM # for the density ratio model 
- Mn1 = t(subgroup.Xn)%*%Wn%*%subgroup.Xn
- Mn2 = t(subgroup.Xn)%*%Wn%*%Xn%*%theta
- param = solve(Mn1)%*%Mn2
- return(param)
+  Wn = diag(w); Xn = as.matrix(x); 
+  subgroup.Xn = as.matrix(x[,-4]); theta=as.vector(theta); 
+  alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model
+  Wn = Wn * w.DRM # for the density ratio model 
+  Mn1 = t(subgroup.Xn)%*%Wn%*%subgroup.Xn
+  Mn2 = t(subgroup.Xn)%*%Wn%*%Xn%*%theta
+  param = solve(Mn1)%*%Mn2
+  return(param)
 }
 
 # Equation (10) of the main text, integral of q_l for Type 2 AD
 MB.est.ADtype2 = function(theta, x, w, subgroup.x, alpha)
 { 
- Wn = diag(w); Xn = as.matrix(x); 
- subgroup.Xn = as.matrix(subgroup.x); theta=as.vector(theta); 
- alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model 
- Wn = Wn * w.DRM # for the density ratio model 
- Mn1 = t(subgroup.Xn)%*%Wn%*%subgroup.Xn
- Mn2 = t(subgroup.Xn)%*%Wn%*%Xn%*%theta
- param = solve(Mn1)%*%Mn2
- return(param)
+  Wn = diag(w); Xn = as.matrix(x); 
+  subgroup.Xn = as.matrix(subgroup.x); theta=as.vector(theta); 
+  alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model 
+  Wn = Wn * w.DRM # for the density ratio model 
+  Mn1 = t(subgroup.Xn)%*%Wn%*%subgroup.Xn
+  Mn2 = t(subgroup.Xn)%*%Wn%*%Xn%*%theta
+  param = solve(Mn1)%*%Mn2
+  return(param)
 }
 
 # Equation (10) of the main text, integral of q_l for Type 3 AD
 MB.est.ADtype3 = function(theta, x, w, alpha)
 {  
- Wn = diag(w); Xn = as.matrix(x); 
- theta=as.vector(theta); 
- alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model 
- Wn = Wn * w.DRM # for the density ratio model 
- Mn1 = t(Xn)%*%Wn%*%Xn
- Mn2 = t(Xn)%*%Wn%*%Xn%*%theta
- param = solve(Mn1)%*%Mn2
- return(param)
+  Wn = diag(w); Xn = as.matrix(x); 
+  theta=as.vector(theta); 
+  alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model 
+  Wn = Wn * w.DRM # for the density ratio model 
+  Mn1 = t(Xn)%*%Wn%*%Xn
+  Mn2 = t(Xn)%*%Wn%*%Xn%*%theta
+  param = solve(Mn1)%*%Mn2
+  return(param)
 }
 
 L = dim(SimulData[[1]]$X_cube)[[1]] # total number of studies (IPD + AD)
@@ -90,30 +90,30 @@ SEQ_AD = 1:30 ; K = length(SEQ_AD)
 beta_tilde_mat = SimulData[[rep_no]]$beta_mat[SEQ_AD,] 
 V_tilde_cube = SimulData[[rep_no]]$V_beta_cube[SEQ_AD,,]
 for (kk in 1:30) { 
- V_tilde_cube[kk,,] = diag(diag(V_tilde_cube[kk,,])) 
+  V_tilde_cube[kk,,] = diag(diag(V_tilde_cube[kk,,])) 
 } # for (kk)
 
 # Reference data for the density ratio model
 tilde_D_x = tilde_D_x_subgroup = NULL ; hat_tau_vec = hat_Gamma_tau_vec = rep(0,length(SEQ_AD))
 mean_X1_IPD = rep(0,J)
 for (j in 1:J){
- mean_X1_IPD[j] = mean(X_IPD[j,,"X1"])
+  mean_X1_IPD[j] = mean(X_IPD[j,,"X1"])
 } # 
 for (k in SEQ_AD) {	
- X_AD_l = SimulData[[rep_no]]$X_cube[k,,]	  
- hat_tau_vec[k] = mean( X_AD_l[,"X1"] )
- hat_Gamma_tau_vec[k] = var( X_AD_l[,"X1"] ) / length(X_AD_l[,"X1"])
- WHICH = which.min( abs( hat_tau_vec[k] - mean_X1_IPD ) )
- tilde_D_x_l = tilde_D_x[[k]] = X_IPD[WHICH,,]
- phi = rep(0, nrow(tilde_D_x_l))
- for (i in 1:nrow(tilde_D_x_l)) {
-  if (tilde_D_x_l[i,"X1"] > 0 && tilde_D_x_l[i,"X2"] == 0) { phi[i] = 1 }
-  else if (tilde_D_x_l[i,"X1"] > 0 && tilde_D_x_l[i,"X2"] == 1) { phi[i] = 2 }
-  else if (tilde_D_x_l[i,"X1"] <= 0 && tilde_D_x_l[i,"X2"] == 0) { phi[i] = 3 } 
-  else { phi[i] = 4 }
- } # for (i)
- ind.1 = 1*(phi == 1); ind.2 = 1*(phi == 2); ind.3 = 1*(phi == 3); ind.4 = 1*(phi == 4)
- tilde_D_x_subgroup[[k]] = as.data.frame(cbind(ind.1, ind.2, ind.3, ind.4))
+  X_AD_l = SimulData[[rep_no]]$X_cube[k,,]	  
+  hat_tau_vec[k] = mean( X_AD_l[,"X1"] )
+  hat_Gamma_tau_vec[k] = var( X_AD_l[,"X1"] ) / length(X_AD_l[,"X1"])
+  WHICH = which.min( abs( hat_tau_vec[k] - mean_X1_IPD ) )
+  tilde_D_x_l = tilde_D_x[[k]] = X_IPD[WHICH,,]
+  phi = rep(0, nrow(tilde_D_x_l))
+  for (i in 1:nrow(tilde_D_x_l)) {
+    if (tilde_D_x_l[i,"X1"] > 0 && tilde_D_x_l[i,"X2"] == 0) { phi[i] = 1 }
+    else if (tilde_D_x_l[i,"X1"] > 0 && tilde_D_x_l[i,"X2"] == 1) { phi[i] = 2 }
+    else if (tilde_D_x_l[i,"X1"] <= 0 && tilde_D_x_l[i,"X2"] == 0) { phi[i] = 3 } 
+    else { phi[i] = 4 }
+  } # for (i)
+  ind.1 = 1*(phi == 1); ind.2 = 1*(phi == 2); ind.3 = 1*(phi == 3); ind.4 = 1*(phi == 4)
+  tilde_D_x_subgroup[[k]] = as.data.frame(cbind(ind.1, ind.2, ind.3, ind.4))
 } # for (k)
 
 # Starting values 
@@ -126,13 +126,13 @@ alpha_mat = array(0.1,c(30,p_alpha)) # for the density ratio model
 theta_mat_AD = SimulData[[rep_no]]$theta_l_mat[SEQ_AD,] 		
 beta_mat_AD = beta_tilde_mat
 for (k in 1:10) {	# type 1 AD
- beta_mat_AD[k,1:3] = MB.est.ADtype1(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=rep(1,nrow(tilde_D_x[[k]])), alpha=alpha_mat[k,])
+  beta_mat_AD[k,1:3] = MB.est.ADtype1(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=rep(1,nrow(tilde_D_x[[k]])), alpha=alpha_mat[k,])
 } 
 for (k in 11:20) {	# type 2 AD
- beta_mat_AD[k,] = MB.est.ADtype2(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=rep(1,nrow(tilde_D_x[[k]])), subgroup.x=tilde_D_x_subgroup[[k]], alpha=alpha_mat[k,])
+  beta_mat_AD[k,] = MB.est.ADtype2(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=rep(1,nrow(tilde_D_x[[k]])), subgroup.x=tilde_D_x_subgroup[[k]], alpha=alpha_mat[k,])
 }
 for (k in 21:30) {	# type 3 AD
- beta_mat_AD[k,] = MB.est.ADtype3(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=rep(1,nrow(tilde_D_x[[k]])), alpha=alpha_mat[k,])
+  beta_mat_AD[k,] = MB.est.ADtype3(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=rep(1,nrow(tilde_D_x[[k]])), alpha=alpha_mat[k,])
 } 
 
 ###############################################
@@ -157,342 +157,346 @@ Prevtime = proc.time()[3]
 ###### Start of MCMC 
 
 for (i_iter in 1:n_iter) {
-
- ##################################
- # Update theta, beta, and alpha 
- ##################################
- 
- # Type 1 AD
- 
- for (k in 1:10){
   
-  # theta and beta
+  ##################################
+  # Update theta, beta, and alpha 
+  ##################################
   
-  theta_vec_q = rnorm(n=p_theta, mean=theta_mat_AD[k,], sd=stepsize_theta)	
-  ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 	
+  # Type 1 AD
   
-  beta_vec_q = tryCatch({
-   MB.est.ADtype1(theta=theta_vec_q, x=tilde_D_x[[k]], w=ww, alpha=alpha_mat[k,])
-  }, error = function(e) {
-   NULL  # Return NULL if an error occurs
-  })
-  
-  if (!is.null(beta_vec_q)){
+  for (k in 1:10){
     
-   logNum = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_vec_q[2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
-   logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE) 
-   
-   logDen = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_mat_AD[k,2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
-   logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-   
-   logAcc = logNum - logDen 
-   
-   if ( runif(n=1) < exp(logAcc) ) {
-    theta_mat_AD[k,] = theta_vec_q
-    beta_mat_AD[k,1:3] = beta_vec_q
-   } # if ( runif(n=1) < exp(logAcc) )
-   
-  } # if (! is.null(beta_vec_q))
+    # update theta and beta (Supplementary Material, Section 2, Step 2)
+    
+    theta_vec_q = rnorm(n=p_theta, mean=theta_mat_AD[k,], sd=stepsize_theta)	
+    ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 	
+    
+    beta_vec_q = tryCatch({
+      MB.est.ADtype1(theta=theta_vec_q, x=tilde_D_x[[k]], w=ww, alpha=alpha_mat[k,])
+    }, error = function(e) {
+      NULL  # Return NULL if an error occurs
+    })
+    
+    if (!is.null(beta_vec_q)){
+      
+      logNum = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_vec_q[2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
+      logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE) 
+      
+      logDen = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_mat_AD[k,2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
+      logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+      
+      logAcc = logNum - logDen 
+      
+      if ( runif(n=1) < exp(logAcc) ) {
+        theta_mat_AD[k,] = theta_vec_q
+        beta_mat_AD[k,1:3] = beta_vec_q
+      } # if ( runif(n=1) < exp(logAcc) )
+      
+    } # if (! is.null(beta_vec_q))
+    
+    # update alpha and beta (Supplementary Material, Section 2, Step 3)
+    
+    alpha_vec_q = rnorm(n=p_alpha, mean=alpha_mat[k,], sd=stepsize_alpha)	# density ratio
+    ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 			
+    
+    beta_vec_q = tryCatch({
+      MB.est.ADtype1(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=ww, alpha=alpha_vec_q)
+    }, error = function(e) {
+      NULL  # Return NULL if an error occurs
+    })
+    
+    if (!is.null(beta_vec_q)){
+      
+      Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
+      q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
+      bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
+      
+      logNum = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_vec_q[2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
+      logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
+      
+      Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
+      q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
+      bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
+      
+      logDen = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_mat_AD[k,2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
+      logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
+      
+      logAcc = logNum - logDen 
+      
+      if ( runif(n=1) < exp(logAcc) ) {
+        alpha_mat[k,] = alpha_vec_q # density ratio
+        beta_mat_AD[k,1:3] = beta_vec_q
+      }
+      
+    } # if (! is.null(beta_vec_q))
+    
+  } # for (k)
   
-  # alpha and beta
+  # Type 2 AD
   
-  alpha_vec_q = rnorm(n=p_alpha, mean=alpha_mat[k,], sd=stepsize_alpha)	# density ratio
-  ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 			
+  for (k in 11:20){
+    
+    # update theta and beta (Supplementary Material, Section 2, Step 2)
+    
+    theta_vec_q = rnorm(n=p_theta, mean=theta_mat_AD[k,], sd=stepsize_theta)	
+    ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 
+    
+    beta_vec_q = tryCatch({
+      MB.est.ADtype2(theta=theta_vec_q, x=tilde_D_x[[k]], w=ww, subgroup.x=tilde_D_x_subgroup[[k]], alpha=alpha_mat[k,])
+    }, error = function(e) {
+      NULL  # Return NULL if an error occurs
+    })
+    
+    if (! is.null(beta_vec_q)){
+      
+      logNum = dmvnorm(beta_tilde_mat[k,], mean=beta_vec_q, sigma=V_tilde_cube[k,,], log=TRUE)
+      logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE) 
+      
+      logDen = dmvnorm(beta_tilde_mat[k,], mean=beta_mat_AD[k,], sigma=V_tilde_cube[k,,], log=TRUE)
+      logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+      
+      logAcc = logNum - logDen 
+      
+      if ( runif(n=1) < exp(logAcc) ) {
+        theta_mat_AD[k,] = theta_vec_q
+        beta_mat_AD[k,] = beta_vec_q
+      }
+      
+    } # if (! is.null(beta_vec_q))
+    
+    # update alpha and beta (Supplementary Material, Section 2, Step 3)
+    
+    alpha_vec_q = rnorm(n=p_alpha, mean=alpha_mat[k,], sd=stepsize_alpha)	# density ratio
+    ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 	
+    
+    beta_vec_q = tryCatch({
+      MB.est.ADtype2(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=ww, subgroup.x=tilde_D_x_subgroup[[k]], alpha=alpha_vec_q)
+    }, error = function(e) {
+      NULL  # Return NULL if an error occurs
+    })
+    
+    if (! is.null(beta_vec_q)){
+      
+      Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
+      q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
+      bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
+      
+      logNum = dmvnorm(beta_tilde_mat[k,], mean=beta_vec_q, sigma=V_tilde_cube[k,,], log=TRUE)
+      logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
+      
+      Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
+      q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
+      bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
+      
+      logDen = dmvnorm(beta_tilde_mat[k,], mean=beta_mat_AD[k,], sigma=V_tilde_cube[k,,], log=TRUE)
+      logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
+      
+      logAcc = logNum - logDen 
+      
+      if ( runif(n=1) < exp(logAcc) ) {
+        alpha_mat[k,] = alpha_vec_q # density ratio
+        beta_mat_AD[k,] = beta_vec_q
+      }
+      
+    } # if (! is.null(beta_vec_q))
+    
+  } # for (k)
   
-  beta_vec_q = tryCatch({
-   MB.est.ADtype1(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=ww, alpha=alpha_vec_q)
-  }, error = function(e) {
-   NULL  # Return NULL if an error occurs
-  })
+  # Type 3 AD
   
-  if (!is.null(beta_vec_q)){
-
-   Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
-   q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
-   bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
-   
-   logNum = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_vec_q[2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
-   logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
-   
-   Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
-   q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
-   bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
-   
-   logDen = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_mat_AD[k,2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
-   logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
-   
-   logAcc = logNum - logDen 
-   
-   if ( runif(n=1) < exp(logAcc) ) {
-    alpha_mat[k,] = alpha_vec_q # density ratio
-    beta_mat_AD[k,1:3] = beta_vec_q
-   }
-   
-  } # if (! is.null(beta_vec_q))
+  for (k in 21:30){
+    
+    # update theta and beta (Supplementary Material, Section 2, Step 2)
+    
+    theta_vec_q = rnorm(n=p_theta, mean=theta_mat_AD[k,], sd=stepsize_theta)	
+    ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 
+    
+    beta_vec_q = tryCatch({
+      beta_vec_q=MB.est.ADtype3(theta=theta_vec_q, x=tilde_D_x[[k]], w=ww, alpha=alpha_mat[k,]) 
+    }, error = function(e) {
+      NULL  # Return NULL if an error occurs
+    })
+    
+    if (! is.null(beta_vec_q)){
+      
+      logNum = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_vec_q[3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
+      logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+      
+      logDen = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_mat_AD[k,3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
+      logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+      
+      logAcc = logNum - logDen 
+      
+      if ( runif(n=1) < exp(logAcc) ) {
+        theta_mat_AD[k,] = theta_vec_q
+        beta_mat_AD[k,] = beta_vec_q
+      }
+      
+    } # if (! is.null(beta_vec_q))
+    
+    # update alpha and beta (Supplementary Material, Section 2, Step 3)
+    
+    alpha_vec_q = rnorm(n=p_alpha, mean=alpha_mat[k,], sd=stepsize_alpha)	# density ratio
+    ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 
+    
+    beta_vec_q = tryCatch({
+      beta_vec_q = MB.est.ADtype3(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=ww, alpha=alpha_vec_q) 
+    }, error = function(e) {
+      NULL  # Return NULL if an error occurs
+    })
+    
+    if (! is.null(beta_vec_q)){
+      
+      Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
+      q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
+      bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
+      
+      logNum = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_vec_q[3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
+      logNum = logNum + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+      logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
+      
+      Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
+      q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
+      bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
+      
+      logDen = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_mat_AD[k,3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
+      logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+      logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
+      
+      logAcc = logNum - logDen 
+      
+      if ( runif(n=1) < exp(logAcc) ) {
+        alpha_mat[k,] = alpha_vec_q # density ratio
+        beta_mat_AD[k,] = beta_vec_q
+      }
+      
+    } # if (! is.null(beta_vec_q))
+    
+  } # for (k)
   
- } # for (k)
- 
- # Type 2 AD
- 
- for (k in 11:20){
+  # Type 4 - ID
   
-  # theta and beta
+  # update theta_mat_IPD (Supplementary Material, Section 2, Step 1)
   
-  theta_vec_q = rnorm(n=p_theta, mean=theta_mat_AD[k,], sd=stepsize_theta)	
-  ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 
+  for (j in 1:J){
+    
+    theta_vec_q = rnorm(n=p_theta, mean=theta_mat_IPD[j,], sd=stepsize_theta)	
+    x.the_q = X_IPD[j,,1:4] %*% theta_vec_q
+    x.the = X_IPD[j,,1:4] %*% theta_mat_IPD[j,]
+    logAcc = sum( dnorm(Y_mat[j,], x.the_q, sqrt(sig2), log=TRUE) - dnorm(Y_mat[j,], x.the, sqrt(sig2), log=TRUE) )
+    logAcc = logAcc + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+    logAcc = logAcc - dmvnorm(theta_mat_IPD[j,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+    
+    if (runif(n=1)<exp(logAcc)){
+      theta_mat_IPD[j,] = theta_vec_q
+    }
+    
+  } # for (j)	
   
-  beta_vec_q = tryCatch({
-   MB.est.ADtype2(theta=theta_vec_q, x=tilde_D_x[[k]], w=ww, subgroup.x=tilde_D_x_subgroup[[k]], alpha=alpha_mat[k,])
-  }, error = function(e) {
-   NULL  # Return NULL if an error occurs
-  })
+  theta_merge = rbind(theta_mat_IPD, theta_mat_AD)
   
-  if (! is.null(beta_vec_q)){
-   
-   logNum = dmvnorm(beta_tilde_mat[k,], mean=beta_vec_q, sigma=V_tilde_cube[k,,], log=TRUE)
-   logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE) 
-   
-   logDen = dmvnorm(beta_tilde_mat[k,], mean=beta_mat_AD[k,], sigma=V_tilde_cube[k,,], log=TRUE)
-   logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-   
-   logAcc = logNum - logDen 
-   
-   if ( runif(n=1) < exp(logAcc) ) {
-    theta_mat_AD[k,] = theta_vec_q
-    beta_mat_AD[k,] = beta_vec_q
-   }
-   
-  } # if (! is.null(beta_vec_q))
+  ##################################
+  # Update mu_vec (Supplementary Material, Section 2, Step 5)
+  ##################################
   
-  # alpha and beta
+  inv_Sigma = solve(Sigma_theta_mat)
+  inv_Var = invLambda_theta + (J+K) * inv_Sigma
+  Var = solve(inv_Var)
+  Mean_2ndpart = inv_Sigma %*% apply(theta_merge,2,sum)
+  Mean = Var %*% Mean_2ndpart
   
-  alpha_vec_q = rnorm(n=p_alpha, mean=alpha_mat[k,], sd=stepsize_alpha)	# density ratio
-  ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 	
+  mu_vec = rmvnorm(n=1, mean=Mean, sigma=Var) 
   
-  beta_vec_q = tryCatch({
-   MB.est.ADtype2(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=ww, subgroup.x=tilde_D_x_subgroup[[k]], alpha=alpha_vec_q)
-  }, error = function(e) {
-   NULL  # Return NULL if an error occurs
-  })
+  ##################################
+  # Update Sigma_theta_mat (Supplementary Material, Section 2, Step 5)
+  ##################################
   
-  if (! is.null(beta_vec_q)){
-   
-   Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
-   q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
-   bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
-   
-   logNum = dmvnorm(beta_tilde_mat[k,], mean=beta_vec_q, sigma=V_tilde_cube[k,,], log=TRUE)
-   logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
-   
-   Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
-   q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
-   bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
-   
-   logDen = dmvnorm(beta_tilde_mat[k,], mean=beta_mat_AD[k,], sigma=V_tilde_cube[k,,], log=TRUE)
-   logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
-   
-   logAcc = logNum - logDen 
-   
-   if ( runif(n=1) < exp(logAcc) ) {
-    alpha_mat[k,] = alpha_vec_q # density ratio
-    beta_mat_AD[k,] = beta_vec_q
-   }
-   
-  } # if (! is.null(beta_vec_q))
+  SS = array(0,c(p_theta,p_theta))
+  for (l in 1:(J+K)){
+    SS = SS + t(theta_merge[l,]-mu_vec) %*% t(t(theta_merge[l,]-mu_vec))
+  } # 
   
- } # for (k)
- 
- # Type 3 AD
- 
- for (k in 21:30){
+  Sigma_theta_mat = riwish((nu0+J+K),(Phi0+SS))	
   
-  # theta and beta
+  ##################################
+  # Update sig2 (IPD only for j=1,...,J) (Supplementary Material, Section 2, Step 5)
+  ##################################
   
-  theta_vec_q = rnorm(n=p_theta, mean=theta_mat_AD[k,], sd=stepsize_theta)	
-  ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 
-  
-  beta_vec_q = tryCatch({
-   beta_vec_q=MB.est.ADtype3(theta=theta_vec_q, x=tilde_D_x[[k]], w=ww, alpha=alpha_mat[k,]) 
-  }, error = function(e) {
-   NULL  # Return NULL if an error occurs
-  })
-  
-  if (! is.null(beta_vec_q)){
-   
-   logNum = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_vec_q[3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
-   logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-   
-   logDen = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_mat_AD[k,3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
-   logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-   
-   logAcc = logNum - logDen 
-   
-   if ( runif(n=1) < exp(logAcc) ) {
-    theta_mat_AD[k,] = theta_vec_q
-    beta_mat_AD[k,] = beta_vec_q
-   }
-   
-  } # if (! is.null(beta_vec_q))
-  
-  # alpha and beta
-  
-  alpha_vec_q = rnorm(n=p_alpha, mean=alpha_mat[k,], sd=stepsize_alpha)	# density ratio
-  ww = rnorm(nrow(tilde_D_x[[k]]),mean=1,sd=1) # multiplier bootstrap 
-  
-  beta_vec_q = tryCatch({
-   beta_vec_q = MB.est.ADtype3(theta=theta_mat_AD[k,], x=tilde_D_x[[k]], w=ww, alpha=alpha_vec_q) 
-  }, error = function(e) {
-   NULL  # Return NULL if an error occurs
-  })
-  
-  if (! is.null(beta_vec_q)){
-   
-   Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
-   q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
-   bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
-   
-   logNum = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_vec_q[3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
-   logNum = logNum + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-   logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
-   
-   Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
-   q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
-   bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
-   
-   logDen = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_mat_AD[k,3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
-   logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-   logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
-   
-   logAcc = logNum - logDen 
-   
-   if ( runif(n=1) < exp(logAcc) ) {
-    alpha_mat[k,] = alpha_vec_q # density ratio
-    beta_mat_AD[k,] = beta_vec_q
-   }
-   
-  } # if (! is.null(beta_vec_q))
-  
- } # for (k)
- 
- # Type 4 - ID
- 
- for (j in 1:J){
-  
-  theta_vec_q = rnorm(n=p_theta, mean=theta_mat_IPD[j,], sd=stepsize_theta)	
-  x.the_q = X_IPD[j,,1:4] %*% theta_vec_q
-  x.the = X_IPD[j,,1:4] %*% theta_mat_IPD[j,]
-  logAcc = sum( dnorm(Y_mat[j,], x.the_q, sqrt(sig2), log=TRUE) - dnorm(Y_mat[j,], x.the, sqrt(sig2), log=TRUE) )
-  logAcc = logAcc + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-  logAcc = logAcc - dmvnorm(theta_mat_IPD[j,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
-  
-  if (runif(n=1)<exp(logAcc)){
-   theta_mat_IPD[j,] = theta_vec_q
+  llik = rep(0,J)
+  for (j in 1:J){
+    x.the = X_IPD[j,,1:4] %*% theta_mat_IPD[j,]
+    llik[j] = sum( (Y_mat[j,] - x.the)^2 )
   }
+  sum_llik = sum( llik )
   
- } # for (j)	
- 
- theta_merge = rbind(theta_mat_IPD, theta_mat_AD)
- 
- ##################################
- # Update mu_vec 
- ##################################
- 
- inv_Sigma = solve(Sigma_theta_mat)
- inv_Var = invLambda_theta + (J+K) * inv_Sigma
- Var = solve(inv_Var)
- Mean_2ndpart = inv_Sigma %*% apply(theta_merge,2,sum)
- Mean = Var %*% Mean_2ndpart
- 
- mu_vec = rmvnorm(n=1, mean=Mean, sigma=Var) 
- 
- ##################################
- # Update Sigma_theta_mat 
- ##################################
- 
- SS = array(0,c(p_theta,p_theta))
- for (l in 1:(J+K)){
-  SS = SS + t(theta_merge[l,]-mu_vec) %*% t(t(theta_merge[l,]-mu_vec))
- } # 
- 
- Sigma_theta_mat = riwish((nu0+J+K),(Phi0+SS))	
- 
- ##################################
- # Update sig2 (IPD only for j=1,...,J)
- ##################################
- 
- llik = rep(0,J)
- for (j in 1:J){
-  x.the = X_IPD[j,,1:4] %*% theta_mat_IPD[j,]
-  llik[j] = sum( (Y_mat[j,] - x.the)^2 )
- }
- sum_llik = sum( llik )
- 
- sig2 = 1.0 / rgamma(1, shape = (1+prod(dim(Y_mat))/2), rate = (1+sum_llik/2) ) # rate !!!
- 
- ##################################
- # Update tau_l (AD only)
- ##################################
- 
- for (k in 1:30){
+  sig2 = 1.0 / rgamma(1, shape = (1+prod(dim(Y_mat))/2), rate = (1+sum_llik/2) ) 
   
-  Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] ) # common for q and current
+  ##################################
+  # Update tau_l (AD only)
+  ##################################
   
-  tau_q = rnorm(n=1, mean=tau_vec[k], sd=stepsize_tau)	
+  for (k in 1:30){
+    
+    Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] ) # common for q and current
+    
+    tau_q = rnorm(n=1, mean=tau_vec[k], sd=stepsize_tau)	
+    
+    q_l_mat_q = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_q)
+    bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
+    logNum = dnorm(hat_tau_vec[k], mean=tau_q, sd=sqrt(hat_Gamma_tau_vec[k]), log=TRUE)
+    logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
+    q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
+    bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
+    logDen = dnorm(hat_tau_vec[k], mean=tau_vec[k], sd=sqrt(hat_Gamma_tau_vec[k]), log=TRUE)
+    logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
+    
+    logAcc = logNum - logDen 
+    
+    if ( runif(n=1) < exp(logAcc) ) {
+      tau_vec[k] = tau_q
+    }
+    
+  } # 
   
-  q_l_mat_q = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_q)
-  bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
-  logNum = dnorm(hat_tau_vec[k], mean=tau_q, sd=sqrt(hat_Gamma_tau_vec[k]), log=TRUE)
-  logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
-  q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
-  bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
-  logDen = dnorm(hat_tau_vec[k], mean=tau_vec[k], sd=sqrt(hat_Gamma_tau_vec[k]), log=TRUE)
-  logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
+  ##################################
+  # Store posterior draws (every iteration)
+  ##################################
   
-  logAcc = logNum - logDen 
+  draw_mu[i_iter,] = mu_vec
+  draw_Sigma_theta[i_iter,] = diag(Sigma_theta_mat)
+  draw_sig2[i_iter] = sig2
   
-  if ( runif(n=1) < exp(logAcc) ) {
-   tau_vec[k] = tau_q
-  }
+  ################################
+  # Print iteration numbers (every 1K iterations) 
+  #  and plot mu's (if DrawDiagnostics==TRUE)  
+  ################################
   
- } # 
- 
- ##################################
- # Store posterior draws (every iteration)
- ##################################
- 
- draw_mu[i_iter,] = mu_vec
- draw_Sigma_theta[i_iter,] = diag(Sigma_theta_mat)
- draw_sig2[i_iter] = sig2
- 
- ################################
- # Print iteration numbers (every 1K iterations) 
- #  and plot mu's (if DrawDiagnostics==TRUE)  
- ################################
- 
- if (i_iter%%1000==0) {
+  if (i_iter%%1000==0) {
+    
+    print( paste0( "rep_no = ",rep_no, ", iteration: ",i_iter," / ",n_iter) )
+    Currenttime = proc.time()[3]
+    LastBatch = Currenttime-Prevtime ; Time_to_Go = (n_iter-i_iter)*(LastBatch/1000)
+    Prevtime = Currenttime
+    print( paste("The last 1000 iter=",round(LastBatch/60,1),"min, Est. Time to go=",round(Time_to_Go/60,1),"min" ))
+    
+    png(file=paste0(PlotFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
+    par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
+    for (jj in 1:p_theta){
+      plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("theta",jj), main="mu")  
+      abline(h=true_mu[jj], col="red", lwd=3)
+      abline(v=burnin, col="blue", lty="dotted", lwd=3)
+    }
+    dev.off()
+    
+  } # if (i_iter%%1000)
   
-  print( paste0( "rep_no = ",rep_no, ", iteration: ",i_iter," / ",n_iter) )
-  Currenttime = proc.time()[3]
-  LastBatch = Currenttime-Prevtime ; Time_to_Go = (n_iter-i_iter)*(LastBatch/1000)
-  Prevtime = Currenttime
-  print( paste("The last 1000 iter=",round(LastBatch/60,1),"min, Est. Time to go=",round(Time_to_Go/60,1),"min" ))
-  
-  png(file=paste0(OutputFolder,"/W_rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
-  par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
-  for (jj in 1:p_theta){
-   plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("theta",jj), main="mu")  
-   abline(h=true_mu[jj], col="red", lwd=3)
-   abline(v=burnin, col="blue", lty="dotted", lwd=3)
-  }
-  dev.off()
-  
- } # if (i_iter%%1000)
- 
 } # for (i_iter)
 
 ###### End of MCMC 
 
 # Save the posterior draws after burn-in
-
 SEQ = (burnin+1):(burnin+mainrun)
-save(draw_mu[SEQ],draw_sig2[SEQ],draw_Sigma_theta[SEQ],file=paste0(RDataFolder,"/rep_",rep_no,".RData"))
+posterior_mu = draw_mu[SEQ,]
+posterior_Sigma_theta = draw_Sigma_theta[SEQ,]
+posterior_sig2 = draw_sig2[SEQ]
+save(posterior_mu,posterior_Sigma_theta,posterior_sig2,file=paste0(RDataFolder,"/rep_",rep_no,".RData"))
