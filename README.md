@@ -2,8 +2,15 @@
 
 This repository follows the same structure as [the JASA reproducibility materials template on GitHub](https://github.com/jasa-acs/repro-template).
 
-## **Folder Structure**  
+## 📁 **code** directory 
 
+The directory has the codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. 
+
+Each simulation study folder contains codes for four methods: 
+- **`Simulation1/`** – Contains files for simulation studies in **Section 4.1**  
+- **`Simulation2/`** – Contains files for simulation studies in **Section 4.2**
+
+- 
 
 
 This README file introduces the structure of the repository. 
