@@ -20,8 +20,8 @@ Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes 
       - Other simulation dataset can be used by changing `rep_no` (in Line 3 of each R code) to a number from 1 to 300.
       - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel. 
 
-Output 
-  - to draw posterior values of main parameters and store them in `output` directory.
+**Output**
+  - Posterior values from the MCMC (after burn-in) are stored in `output/[MethodName]/RData` directory.
   - If 
 
 
