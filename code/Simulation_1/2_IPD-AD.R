@@ -419,7 +419,7 @@ for (i_iter in 1:n_iter) {
   Sigma_theta_mat = riwish((nu0+J+K),(Phi0+SS))	
   
   ##################################
-  # Update sig2 (IPD only for j=1,...,J) (Supplementary Material, Section 2, Step 5)
+  # Update sig2 (Supplementary Material, Section 2, Step 6)
   ##################################
   
   llik = rep(0,J)
@@ -432,7 +432,7 @@ for (i_iter in 1:n_iter) {
   sig2 = 1.0 / rgamma(1, shape = (1+prod(dim(Y_mat))/2), rate = (1+sum_llik/2) ) 
   
   ##################################
-  # Update tau_l (AD only)
+  # Update tau_l (Supplementary Material, Section 2, Step 4)
   ##################################
   
   for (k in 1:30){
