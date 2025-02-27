@@ -1,5 +1,17 @@
 # **Supplementary Materials for ''Bayesian Random-Effects Meta-Analysis Integrating Individual Participant Data and Aggregate Data''**  
 
+This repository follows the same structure as [the JASA reproducibility materials template on GitHub](https://github.com/jasa-acs/repro-template).
+
+## **Folder Structure**  
+
+
+
+This README file introduces the structure of the repository. 
+
+
+[Click Here](https://example.com)
+
+(). 
 This repository contains **R script files** and **data/result files** to reproduce **Figure 3** from the main text.  
 
 ## **Folder Structure**  
