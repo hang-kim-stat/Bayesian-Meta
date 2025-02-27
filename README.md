@@ -31,3 +31,9 @@ Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes 
 
 `I-WIP_Application_CodeOnly.R` is the code we used to apply our proposed method to the real data. 
   - The data are not released here for [  REASON ].  
+
+
+## `data` directory 
+
+
+## `output` directory 
