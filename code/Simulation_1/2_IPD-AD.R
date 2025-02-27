@@ -2,56 +2,69 @@ rm(list = ls())
 
 rep_no = 1 
 # Note: This number was changed from 1 to 300, for getting 300 repeated simulation results. The authors used a batch script to run the 300 repeated simulations in multiple cores parallel. 
-
 set.seed(rep_no+1000)
 
-FolderName = "2_IPD-AD"
-if (!file.exists(FolderName)){ dir.create(FolderName, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
+# create output folder if it does not exist
+OutputFolder = "../../output/Simulation_1/2_IPD-AD"
+if (!file.exists(OutputFolder)){ dir.create(OutputFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
+RDataFolder = paste0(OutputFolder,"/RData")
+if (!file.exists(RDataFolder)){ dir.create(RDataFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
 
+# Ask if diagnostic plots will be produced
+DrawDiagnostics = TRUE # TRUE / FALSE
+if (DrawDiagnostics==T){
+  PlotFolder = paste0(OutputFolder,"/DiagnosticPlot")
+  if (!file.exists(PlotFolder)){ dir.create(PlotFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
+} # 
+
+# libraries 
 library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 
-load("0_SimulData.RData")
+#####################################
+# Load 300 repeated datasets of Simulatino Study 1
+#####################################
+
+load("../../data/SimulationData_1.RData")
+ls() 
+# For the meaning of each object, refer to README in "data" folder of the github repository
 
 #####################################
 # Functions                         # 
 #####################################
 
-logit = function(p) return( log(p)-log(1-p) ) ;
-logit_inv = function(alpha) return( exp(alpha)/(exp(alpha)+1) ) ;
-
-# Equation (10), integral of q_l for Type 1 AD
+# Equation (10) of the main text, integral of q_l for Type 1 AD
 MB.est.ADtype1 = function(theta, x, w, alpha)
 {  
  Wn = diag(w); Xn = as.matrix(x); 
  subgroup.Xn = as.matrix(x[,-4]); theta=as.vector(theta); 
- alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # added for the density ratio model
- Wn = Wn * w.DRM # added for the density ratio model 
+ alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model
+ Wn = Wn * w.DRM # for the density ratio model 
  Mn1 = t(subgroup.Xn)%*%Wn%*%subgroup.Xn
  Mn2 = t(subgroup.Xn)%*%Wn%*%Xn%*%theta
  param = solve(Mn1)%*%Mn2
  return(param)
 }
 
-# Equation (10), integral of q_l for Type 2 AD
+# Equation (10) of the main text, integral of q_l for Type 2 AD
 MB.est.ADtype2 = function(theta, x, w, subgroup.x, alpha)
 { 
  Wn = diag(w); Xn = as.matrix(x); 
  subgroup.Xn = as.matrix(subgroup.x); theta=as.vector(theta); 
- alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # added for the density ratio model 
- Wn = Wn * w.DRM # added for the density ratio model 
+ alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model 
+ Wn = Wn * w.DRM # for the density ratio model 
  Mn1 = t(subgroup.Xn)%*%Wn%*%subgroup.Xn
  Mn2 = t(subgroup.Xn)%*%Wn%*%Xn%*%theta
  param = solve(Mn1)%*%Mn2
  return(param)
 }
 
-# Equation (10), integral of q_l for Type 3 AD
+# Equation (10) of the main text, integral of q_l for Type 3 AD
 MB.est.ADtype3 = function(theta, x, w, alpha)
 {  
  Wn = diag(w); Xn = as.matrix(x); 
  theta=as.vector(theta); 
- alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # added for the density ratio model 
- Wn = Wn * w.DRM # added for the density ratio model 
+ alpha=as.vector(alpha);  w.DRM=diag(as.vector(exp(as.matrix(x[,1:2])%*%alpha))) # for the density ratio model 
+ Wn = Wn * w.DRM # for the density ratio model 
  Mn1 = t(Xn)%*%Wn%*%Xn
  Mn2 = t(Xn)%*%Wn%*%Xn%*%theta
  param = solve(Mn1)%*%Mn2
@@ -131,26 +144,18 @@ burnin = 10000 ; mainrun = 10000
 n_iter = burnin + mainrun 
 stepsize_theta = 0.2 ; stepsize_alpha = 0.01 ; stepsize_tau = 0.02
 
+# Prepare repository for posterior draws 
 draw_mu = array(0,c(n_iter,p_theta))
-draw_theta = array(0,c(n_iter,(J+K),p_theta))
-draw_sig2 = rep(0,n_iter)
 draw_Sigma_theta = array(0,c(n_iter,p_theta)) 
-draw_alpha = array(0,c(n_iter,K,p_alpha))
-draw_tau = array(0,c(n_iter,K))
-
-is_acc_theta_AD = array(0,c(n_iter,K))
-is_acc_alpha = array(0,c(n_iter,K))
-is_acc_theta_IPD = array(0,c(n_iter,J))
-is_acc_tau = array(0,c(n_iter,K))
-
-no_solve_failed = array(0,n_iter)
+draw_sig2 = rep(0,n_iter)
 
 ######
 program_start_time = Sys.time()
 format(Sys.time(), "%b %d %Y, %a, %H:%M:%S ")
 Prevtime = proc.time()[3]
 
-# iterations 
+###### Start of MCMC 
+
 for (i_iter in 1:n_iter) {
 
  ##################################
@@ -172,26 +177,22 @@ for (i_iter in 1:n_iter) {
    NULL  # Return NULL if an error occurs
   })
   
-  if (is.null(beta_vec_q)){
-   
-   no_solve_failed[i_iter] = no_solve_failed[i_iter] + 1
-   
-  } else {
-   
+  if (!is.null(beta_vec_q)){
+    
    logNum = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_vec_q[2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
    logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE) 
    
    logDen = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_mat_AD[k,2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
    logDen = logDen + dmvnorm(theta_mat_AD[k,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
+   
    logAcc = logNum - logDen 
    
    if ( runif(n=1) < exp(logAcc) ) {
-    is_acc_theta_AD[i_iter,k] = 1
     theta_mat_AD[k,] = theta_vec_q
     beta_mat_AD[k,1:3] = beta_vec_q
-   }
+   } # if ( runif(n=1) < exp(logAcc) )
    
-  } # if (is.null(beta_vec_q))
+  } # if (! is.null(beta_vec_q))
   
   # alpha and beta
   
@@ -204,12 +205,8 @@ for (i_iter in 1:n_iter) {
    NULL  # Return NULL if an error occurs
   })
   
-  if (is.null(beta_vec_q)){
-   
-   no_solve_failed[i_iter] = no_solve_failed[i_iter] + 1
-   
-  } else {
-   
+  if (!is.null(beta_vec_q)){
+
    Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
    q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
    bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
@@ -227,12 +224,11 @@ for (i_iter in 1:n_iter) {
    logAcc = logNum - logDen 
    
    if ( runif(n=1) < exp(logAcc) ) {
-    is_acc_alpha[i_iter,k] = 1
     alpha_mat[k,] = alpha_vec_q # density ratio
     beta_mat_AD[k,1:3] = beta_vec_q
    }
    
-  } # if (is.null(beta_vec_q))
+  } # if (! is.null(beta_vec_q))
   
  } # for (k)
  
@@ -251,11 +247,7 @@ for (i_iter in 1:n_iter) {
    NULL  # Return NULL if an error occurs
   })
   
-  if (is.null(beta_vec_q)){
-   
-   no_solve_failed[i_iter] = no_solve_failed[i_iter] + 1
-   
-  } else {
+  if (! is.null(beta_vec_q)){
    
    logNum = dmvnorm(beta_tilde_mat[k,], mean=beta_vec_q, sigma=V_tilde_cube[k,,], log=TRUE)
    logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE) 
@@ -266,12 +258,11 @@ for (i_iter in 1:n_iter) {
    logAcc = logNum - logDen 
    
    if ( runif(n=1) < exp(logAcc) ) {
-    is_acc_theta_AD[i_iter,k] = 1
     theta_mat_AD[k,] = theta_vec_q
     beta_mat_AD[k,] = beta_vec_q
    }
    
-  } # if (is.null(beta_vec_q))
+  } # if (! is.null(beta_vec_q))
   
   # alpha and beta
   
@@ -284,11 +275,7 @@ for (i_iter in 1:n_iter) {
    NULL  # Return NULL if an error occurs
   })
   
-  if (is.null(beta_vec_q)){
-   
-   no_solve_failed[i_iter] = no_solve_failed[i_iter] + 1
-   
-  } else {
+  if (! is.null(beta_vec_q)){
    
    Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
    q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
@@ -307,12 +294,11 @@ for (i_iter in 1:n_iter) {
    logAcc = logNum - logDen 
    
    if ( runif(n=1) < exp(logAcc) ) {
-    is_acc_alpha[i_iter,k] = 1
     alpha_mat[k,] = alpha_vec_q # density ratio
     beta_mat_AD[k,] = beta_vec_q
    }
    
-  } # if (is.null(beta_vec_q))
+  } # if (! is.null(beta_vec_q))
   
  } # for (k)
  
@@ -331,11 +317,7 @@ for (i_iter in 1:n_iter) {
    NULL  # Return NULL if an error occurs
   })
   
-  if (is.null(beta_vec_q)){
-   
-   no_solve_failed[i_iter] = no_solve_failed[i_iter] + 1
-   
-  } else {
+  if (! is.null(beta_vec_q)){
    
    logNum = dmvnorm(beta_tilde_mat[k,3:4], mean=beta_vec_q[3:4], sigma=V_tilde_cube[k,3:4,3:4], log=TRUE)
    logNum = logNum + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
@@ -346,12 +328,11 @@ for (i_iter in 1:n_iter) {
    logAcc = logNum - logDen 
    
    if ( runif(n=1) < exp(logAcc) ) {
-    is_acc_theta_AD[i_iter,k] = 1
     theta_mat_AD[k,] = theta_vec_q
     beta_mat_AD[k,] = beta_vec_q
    }
    
-  } # if (is.null(beta_vec_q))
+  } # if (! is.null(beta_vec_q))
   
   # alpha and beta
   
@@ -364,11 +345,7 @@ for (i_iter in 1:n_iter) {
    NULL  # Return NULL if an error occurs
   })
   
-  if (is.null(beta_vec_q)){
-   
-   no_solve_failed[i_iter] = no_solve_failed[i_iter] + 1
-   
-  } else {
+  if (! is.null(beta_vec_q)){
    
    Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
    q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
@@ -389,12 +366,11 @@ for (i_iter in 1:n_iter) {
    logAcc = logNum - logDen 
    
    if ( runif(n=1) < exp(logAcc) ) {
-    is_acc_alpha[i_iter,k] = 1
     alpha_mat[k,] = alpha_vec_q # density ratio
     beta_mat_AD[k,] = beta_vec_q
    }
    
-  } # if (is.null(beta_vec_q))
+  } # if (! is.null(beta_vec_q))
   
  } # for (k)
  
@@ -410,7 +386,6 @@ for (i_iter in 1:n_iter) {
   logAcc = logAcc - dmvnorm(theta_mat_IPD[j,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
   
   if (runif(n=1)<exp(logAcc)){
-   is_acc_theta_IPD[i_iter,j] = 1
    theta_mat_IPD[j,] = theta_vec_q
   }
   
@@ -476,20 +451,23 @@ for (i_iter in 1:n_iter) {
   logAcc = logNum - logDen 
   
   if ( runif(n=1) < exp(logAcc) ) {
-   is_acc_tau[i_iter,k] = 1
    tau_vec[k] = tau_q
   }
   
  } # 
  
- ################
- # Store 
+ ##################################
+ # Store posterior draws (every iteration)
+ ##################################
  
  draw_mu[i_iter,] = mu_vec
  draw_Sigma_theta[i_iter,] = diag(Sigma_theta_mat)
  draw_sig2[i_iter] = sig2
  
- # Print iteration numbers and plot mu's  
+ ################################
+ # Print iteration numbers (every 1K iterations) 
+ #  and plot mu's (if DrawDiagnostics==TRUE)  
+ ################################
  
  if (i_iter%%1000==0) {
   
@@ -499,7 +477,7 @@ for (i_iter in 1:n_iter) {
   Prevtime = Currenttime
   print( paste("The last 1000 iter=",round(LastBatch/60,1),"min, Est. Time to go=",round(Time_to_Go/60,1),"min" ))
   
-  png(file=paste0(FolderName,"/W_rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
+  png(file=paste0(OutputFolder,"/W_rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
   par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
   for (jj in 1:p_theta){
    plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("theta",jj), main="mu")  
@@ -508,11 +486,13 @@ for (i_iter in 1:n_iter) {
   }
   dev.off()
   
-  save(draw_mu,draw_sig2,draw_Sigma_theta,file=paste0(FolderName,"/Rep_",rep_no,".RData"))
-  
  } # if (i_iter%%1000)
  
 } # for (i_iter)
 
-############## Iteration ends ##############
-########################################################
+###### End of MCMC 
+
+# Save the posterior draws after burn-in
+
+SEQ = (burnin+1):(burnin+mainrun)
+save(draw_mu[SEQ],draw_sig2[SEQ],draw_Sigma_theta[SEQ],file=paste0(RDataFolder,"/rep_",rep_no,".RData"))
