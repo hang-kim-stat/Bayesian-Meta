@@ -30,8 +30,8 @@ for (i_method in 1:length(Method_list)){
       isCover1[rep_no,i_var] = (Post2_5<=true_mu[i_var]) && (true_mu[i_var]<=Post97_5)
     } # for (i_var in 1:p_mu)
     
-    PostMean[rep_no,p_mu+(1:p_mu)] = apply(posterior_Sigma_theta[,],2,mean)
-    PostVar[rep_no,p_mu+(1:p_mu)] = apply(posterior_Sigma_theta[,],2,var)
+    PostMean[rep_no,p_mu+(1:p_mu)] = apply(posterior_Sigma_theta,2,mean)
+    PostVar[rep_no,p_mu+(1:p_mu)] = apply(posterior_Sigma_theta,2,var)
     for (i_var in 1:p_mu){
       Post2_5 = quantile(posterior_Sigma_theta[,i_var],probs=0.025)
       Post97_5 = quantile(posterior_Sigma_theta[,i_var],probs=0.975)
@@ -72,5 +72,5 @@ for (i_method in 1:4){
 } # 
 
 ##############################
-write.csv(Table2,row.names=F,file="Table_for_Figure.csv")
+write.csv(Table2,file="../../output/Simulation_1/Table_for_Figure.csv")
 ##############################
