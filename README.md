@@ -6,13 +6,13 @@ This repository follows the same structure as [the JASA reproducibility material
 
 The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. 
 
-Each **simulation study** folder contains codes for four methods: 
+Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes for four methods: 
 - `1_Benchmark.R`: dd
 - **`Simulation2/`** – Contains files for simulation studies in **Section 4.2**
 - `1_Benchmark.R`: dd
 - 
 
-
+## `code` directory 
 
 [Click Here](https://example.com)
 
