@@ -2,15 +2,15 @@
 
 This repository follows the same structure as [the JASA reproducibility materials template on GitHub](https://github.com/jasa-acs/repro-template).
 
-## 📁 **code** directory 
+## `code` directory 
 
 The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. 
 
 Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes for four methods: 
-- `1_Benchmark.R`: dd
-- **`Simulation2/`** – Contains files for simulation studies in **Section 4.2**
-- `1_Benchmark.R`: dd
-- 
+- `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
+- `2_IPD-AD.R` Propsed meta-analysis with 10 IPD studies and 30 AD studies
+- `3_IPD-AD-pooled.R` Proposed meta-analysis with a mis-specification density ratio model
+- `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
 
 ## `code` directory 
 
