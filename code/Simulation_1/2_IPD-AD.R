@@ -79,8 +79,8 @@ p_theta = dim(SimulData[[1]]$X_cube)[[3]] ; p_beta = p_theta ; p_alpha = 2
 ###############################################
 
 # Hyperparameters of prior distributions 
-invLambda_theta = diag(1/10^4,p_theta) # mu ~ N(0, Lambda_theta)
-nu0 = 0.1 ; Phi0 = diag(0.1,p_theta) # Sigma ~ InvWishart(0.1, 0.1 I)
+invLambda_theta = diag(1/10^4,p_theta)  # mu ~ N(0, Lambda_theta)
+nu0 = 0.1 ; Phi0 = diag(0.1,p_theta)    # Sigma ~ InvWishart(0.1, 0.1 I)
 
 # Divide simulation data into IPD dataset and AD dataset 
 SEQ_IPD = 31:40 ; J = length(SEQ_IPD)
@@ -479,14 +479,18 @@ for (i_iter in 1:n_iter) {
     Prevtime = Currenttime
     print( paste("The last 1000 iter=",round(LastBatch/60,1),"min, Est. Time to go=",round(Time_to_Go/60,1),"min" ))
     
-    png(file=paste0(PlotFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
-    par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
-    for (jj in 1:p_theta){
-      plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("theta",jj), main="mu")  
-      abline(h=true_mu[jj], col="red", lwd=3)
-      abline(v=burnin, col="blue", lty="dotted", lwd=3)
-    }
-    dev.off()
+    if (DrawDiagnostics==T){
+      
+      png(file=paste0(PlotFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
+      par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
+      for (jj in 1:p_theta){
+        plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("theta",jj), main="mu")  
+        abline(h=true_mu[jj], col="red", lwd=3)
+        abline(v=burnin, col="blue", lty="dotted", lwd=3)
+      }
+      dev.off()
+      
+    } # if (DrawDiagnostics==T)
     
   } # if (i_iter%%1000)
   
