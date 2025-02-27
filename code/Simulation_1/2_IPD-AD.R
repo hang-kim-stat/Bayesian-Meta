@@ -484,7 +484,7 @@ for (i_iter in 1:n_iter) {
       png(file=paste0(PlotFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
       par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
       for (jj in 1:p_theta){
-        plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("theta",jj), main="mu")  
+        plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("mu",jj), main="mu")  
         abline(h=true_mu[jj], col="red", lwd=3)
         abline(v=burnin, col="blue", lty="dotted", lwd=3)
       }
