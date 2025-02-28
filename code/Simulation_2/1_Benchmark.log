@@ -1,0 +1,599 @@
+
+R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> rm(list = ls())
+> 
+> rep_no = 1 
+> # Note: This number was changed from 1 to 300, for getting 300 repeated simulation results. The authors used a batch script to run the 300 repeated simulations in multiple cores parallel. 
+> set.seed(rep_no+1000)
+> 
+> # create output folder if it does not exist
+> OutputFolder = "../../output/Simulation_2/1_Benchmark"
+> if (!file.exists(OutputFolder)){ dir.create(OutputFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
+> RDataFolder = paste0(OutputFolder,"/RData")
+> if (!file.exists(RDataFolder)){ dir.create(RDataFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
+> 
+> # Ask if diagnostic plots will be produced
+> DrawDiagnostics = TRUE # TRUE / FALSE
+> if (DrawDiagnostics==T){
++   PlotFolder = paste0(OutputFolder,"/DiagnosticPlot")
++   if (!file.exists(PlotFolder)){ dir.create(PlotFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
++ } # 
+> 
+> # libraries 
+> library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
+> library(emplik) # empirical likelihood
+> 
+> #####################################
+> # Load 300 repeated datasets of Simulatino Study 1
+> #####################################
+> 
+> load("../../data/SimulationData_2.RData")
+> ls() 
+ [1] "A_cube"                  "alpha_biased_access"    
+ [3] "beta_glm"                "beta_mat"               
+ [5] "CATCH"                   "delta_biased_access"    
+ [7] "DrawDiagnostics"         "fr_biased"              
+ [9] "i_rep"                   "i_study"                
+[11] "L"                       "logit"                  
+[13] "logit_inv"               "logit_p_delta_biased"   
+[15] "logit_p_Y"               "n_rep"                  
+[17] "n_sample"                "OutputFolder"           
+[19] "p_beta"                  "p_theta"                
+[21] "PlotFolder"              "RDataFolder"            
+[23] "rep_no"                  "RR"                     
+[25] "seed0"                   "SimulData"              
+[27] "temp_standardized_beta2" "tempData"               
+[29] "theta_glm"               "theta_hat_l_mat"        
+[31] "theta_l_mat"             "true_mu"                
+[33] "true_Sigma_theta"        "upsilon_l"              
+[35] "V_beta_cube"             "X_cube"                 
+[37] "Y_mat"                  
+> # For the meaning of each object, refer to README in "data" folder of the github repository
+> 
+> L = dim(SimulData[[1]]$X_cube)[[1]] # total number of studies (IPD + AD)
+> p_theta = dim(SimulData[[1]]$X_cube)[[3]] ; p_beta = p_theta - 1
+> 
+> ###############################################
+> # Setting Hyperparameters and starting values # 
+> ###############################################
+> 
+> invLambda_theta = diag(1/10^4,p_theta)  # mu ~ N(0, Lambda_theta)
+> nu0 = 0.1 ; Phi0 = diag(0.1,p_theta)  # Sigma ~ InvWishart(0.1, 0.1 I)
+> 
+> # Use all (stacked) simulation dataset as IPD dataset 
+> SEQ_IPD = 1:40 ; J = length(SEQ_IPD)
+> X_IPD = SimulData[[rep_no]]$X_cube[SEQ_IPD,,]
+> Y_mat = SimulData[[rep_no]]$Y_mat[SEQ_IPD,]
+> 
+> # Starting values 
+> theta_mat_IPD = SimulData[[rep_no]]$theta_l_mat[SEQ_IPD,] 
+> mu_vec = true_mu
+> Sigma_theta_mat = diag(1,p_theta) 
+> 
+> ###############################################
+> # Running MCMC
+> ###############################################
+> 
+> # MCMC setting 
+> burnin = 10000 ; mainrun = 10000
+> n_iter = burnin + mainrun 
+> stepsize_theta = 0.15
+> 
+> # Prepare repository for posterior draws 
+> draw_mu = array(0,c(n_iter,p_theta))
+> draw_Sigma_theta = array(0,c(n_iter,p_theta)) 
+> 
+> ######
+> program_start_time = Sys.time()
+> format(Sys.time(), "%b %d %Y, %a, %H:%M:%S ")
+[1] "Feb 28 2025, Fri, 16:22:33 "
+> Prevtime = proc.time()[3]
+> 
+> ###### Start of MCMC 
+> 
+> for (i_iter in 1:n_iter) {
++   
++   ##################################
++   # Update theta_mat_IPD  
++   ##################################
++   
++   for (j in 1:J){
++     
++     theta_vec_q = rnorm(n=p_theta, mean=theta_mat_IPD[j,], sd=stepsize_theta)	
++     x.the_q = X_IPD[j,,1:4] %*% theta_vec_q
++     x.the = X_IPD[j,,1:4] %*% theta_mat_IPD[j,]
++     logAcc = sum( x.the_q * Y_mat[j,] - log( 1 + exp(x.the_q) ) - x.the * Y_mat[j,] + log( 1 + exp(x.the) ) )
++     logAcc = logAcc + dmvnorm(theta_vec_q, mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
++     logAcc = logAcc - dmvnorm(theta_mat_IPD[j,], mean=mu_vec, sigma=Sigma_theta_mat, log=TRUE)
++     
++     if (runif(n=1)<exp(logAcc)){
++       theta_mat_IPD[j,] = theta_vec_q
++     }
++     
++   } # for (j)	
++   
++   ##################################
++   # Update mu_vec 
++   ##################################
++   
++   inv_Sigma = solve(Sigma_theta_mat)
++   inv_Var = invLambda_theta + J * inv_Sigma
++   Var = solve(inv_Var)
++   Mean_2ndpart = inv_Sigma %*% apply(theta_mat_IPD,2,sum)
++   Mean = Var %*% Mean_2ndpart
++   
++   mu_vec = rmvnorm(n=1, mean=Mean, sigma=Var) 
++   
++   ##################################
++   # Update Sigma_theta_mat 
++   ##################################
++   
++   SS = array(0,c(p_theta,p_theta))
++   for (l in 1:J){
++     SS = SS + t(theta_mat_IPD[l,]-mu_vec) %*% t(t(theta_mat_IPD[l,]-mu_vec))
++   } # 
++   
++   Sigma_theta_mat = riwish((nu0+J),(Phi0+SS))	
++   
++   ##################################
++   # Store posterior draws (every iteration)
++   ##################################
++   
++   draw_mu[i_iter,] = mu_vec
++   draw_Sigma_theta[i_iter,] = diag(Sigma_theta_mat)
++   
++   ################################
++   # Print iteration numbers (every 1K iterations) 
++   #  and plot mu's (if DrawDiagnostics==TRUE)  
++   ################################
++   
++   if (i_iter%%100==0) {
++     
++     print( paste0( "rep_no = ",rep_no, ", iteration: ",i_iter," / ",n_iter) )
++     Currenttime = proc.time()[3]
++     LastBatch = Currenttime-Prevtime ; Time_to_Go = (n_iter-i_iter)*(LastBatch/1000)
++     Prevtime = Currenttime
++     print( paste("The last 1000 iter=",round(LastBatch/60,1),"min, Est. Time to go=",round(Time_to_Go/60,1),"min" ))
++     
++     if (DrawDiagnostics==T){
++       
++       png(file=paste0(PlotFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
++       par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
++       for (jj in 1:p_theta){
++         plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("mu",jj), main="mu")  
++         abline(h=true_mu[jj], col="red", lwd=3)
++         abline(v=burnin, col="blue", lty="dotted", lwd=3)
++       }
++       dev.off()
++       
++     } # if (DrawDiagnostics==T)
++     
++   } # if (i_iter%%100)
++   
++ } # for (i_iter)
+[1] "rep_no = 1, iteration: 100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 1900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 2900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 3900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 4900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 5900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 6000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 6100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 6200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 6300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 6400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 6500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 6600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 6700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 6800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 6900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 7200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.2 min"
+[1] "rep_no = 1, iteration: 7300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 7900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 8900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 9900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 10900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 11900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 12900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 13900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 14900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 15000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 15100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 15200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 15300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 15400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 15500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0.1 min"
+[1] "rep_no = 1, iteration: 15600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 15700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 15800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 15900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 16900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 17900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 18900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19100 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19200 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19300 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19400 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19500 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19600 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19700 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19800 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 19900 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+[1] "rep_no = 1, iteration: 20000 / 20000"
+[1] "The last 1000 iter= 0 min, Est. Time to go= 0 min"
+> 
+> ###### End of MCMC 
+> 
+> # Save the posterior draws after burn-in
+> SEQ = (burnin+1):(burnin+mainrun)
+> posterior_mu = draw_mu[SEQ,]
+> posterior_Sigma_theta = draw_Sigma_theta[SEQ,]
+> save(posterior_mu,posterior_Sigma_theta,file=paste0(RDataFolder,"/rep_",rep_no,".RData"))
+> 

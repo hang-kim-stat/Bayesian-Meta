@@ -21,7 +21,7 @@ if (DrawDiagnostics==T){
 library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 
 #####################################
-# Load 300 repeated datasets of Simulatino Study 1
+# Load 300 repeated datasets of Simulation Study 1
 #####################################
 
 load("../../data/SimulationData_1.RData")
@@ -210,14 +210,12 @@ for (i_iter in 1:n_iter) {
       Exp_alpha_psi_q = exp( tilde_D_x[[k]][,1:2]%*%alpha_vec_q )
       q_l_mat_q = cbind(Exp_alpha_psi_q - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_q - tau_vec[k])
       bar_q_l_q = apply(q_l_mat_q,2,mean) ; Sigma_q_l_q = var(q_l_mat_q) / nrow(q_l_mat_q)
-      
       logNum = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_vec_q[2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
       logNum = logNum + dmvnorm(bar_q_l_q, mean=rep(0,2), sigma=Sigma_q_l_q, log=TRUE) 
       
       Exp_alpha_psi_k = exp( tilde_D_x[[k]][,1:2]%*%alpha_mat[k,] )
       q_l_mat = cbind(Exp_alpha_psi_k - 1, tilde_D_x[[k]][,"X1"] * Exp_alpha_psi_k - tau_vec[k])
       bar_q_l = apply(q_l_mat,2,mean) ; Sigma_q_l = var(q_l_mat) / nrow(q_l_mat)
-      
       logDen = dmvnorm(beta_tilde_mat[k,2:3], mean=beta_mat_AD[k,2:3], sigma=V_tilde_cube[k,2:3,2:3], log=TRUE)
       logDen = logDen + dmvnorm(bar_q_l, mean=rep(0,2), sigma=Sigma_q_l, log=TRUE) 
       

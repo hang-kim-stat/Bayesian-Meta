@@ -21,7 +21,7 @@ if (DrawDiagnostics==T){
 library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 
 #####################################
-# Load 300 repeated datasets of Simulatino Study 1
+# Load 300 repeated datasets of Simulation Study 1
 #####################################
 
 load("../../data/SimulationData_1.RData")

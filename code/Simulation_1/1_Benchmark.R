@@ -21,7 +21,7 @@ if (DrawDiagnostics==T){
 library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 
 #####################################
-# Load 300 repeated datasets of Simulatino Study 1
+# Load 300 repeated datasets of Simulation Study 1
 #####################################
 
 load("../../data/SimulationData_1.RData")
@@ -73,12 +73,8 @@ Prevtime = proc.time()[3]
 for (i_iter in 1:n_iter) {
   
   ##################################
-  # Update theta_mat_AD 
+  # Update theta_mat_IPD  
   ##################################
-  
-  # Type 4 - ID
-  
-  # update theta_mat_IPD
   
   for (j in 1:J){
     
