@@ -40,7 +40,7 @@ Type 'q()' to quit R.
 > library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 > 
 > #####################################
-> # Load 300 repeated datasets of Simulatino Study 1
+> # Load 300 repeated datasets of Simulation Study 2
 > #####################################
 > 
 > load("../../data/SimulationData_2.RData")
@@ -141,9 +141,7 @@ Type 'q()' to quit R.
 > burnin = 10000 ; mainrun = 10000
 > n_iter = burnin + mainrun 
 > stepsize_theta_AD = c(0.2, 0.1, 0.1, 0.2) * 1.5
-> stepsize_theta_IPD = 0.15
-> stepsize_alpha = 0.005
-> stepsize_tau = 0.1
+> stepsize_theta_IPD = 0.15 ; stepsize_alpha = 0.005 ; stepsize_tau = 0.1
 > 
 > # Prepare repository for posterior draws 
 > draw_mu = array(0,c(n_iter,p_theta))
@@ -152,7 +150,7 @@ Type 'q()' to quit R.
 > ######
 > program_start_time = Sys.time()
 > format(Sys.time(), "%b %d %Y, %a, %H:%M:%S ")
-[1] "Feb 28 2025, Fri, 16:54:13 "
+[1] "Feb 28 2025, Fri, 17:32:12 "
 > Prevtime = proc.time()[3]
 > 
 > ###### Start of MCMC 
@@ -320,7 +318,7 @@ Type 'q()' to quit R.
 +     
 +     if (DrawDiagnostics==T){
 +       
-+       png(file=paste0(OutputFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
++       png(file=paste0(PlotFolder,"/rep_",rep_no,"_mu.png"),width=1000,height=1800,pointsize=40)
 +       par(mfrow=c(4,1),mai=c(1.4,1.1,0.6,0.4),family="serif",mgp = c(1.5, 0.5, 0)) # b l t r 
 +       for (jj in 1:p_theta){
 +         plot(draw_mu[1:i_iter,jj], type="l", xlab="Iteration", ylab=paste0("mu",jj), main="mu")  
@@ -335,39 +333,39 @@ Type 'q()' to quit R.
 +   
 + } # for (i_iter)
 [1] "rep_no = 1, iteration: 1000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 26.5 min"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 26.2 min"
 [1] "rep_no = 1, iteration: 2000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 25.3 min"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 24.6 min"
 [1] "rep_no = 1, iteration: 3000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 23.6 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 22.6 min"
 [1] "rep_no = 1, iteration: 4000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 22.1 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 21 min"
 [1] "rep_no = 1, iteration: 5000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 20.6 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 20.2 min"
 [1] "rep_no = 1, iteration: 6000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 19.4 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 18.2 min"
 [1] "rep_no = 1, iteration: 7000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 18.2 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 16.9 min"
 [1] "rep_no = 1, iteration: 8000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 16.5 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 15.6 min"
 [1] "rep_no = 1, iteration: 9000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 15.4 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 14.3 min"
 [1] "rep_no = 1, iteration: 10000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 13.9 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 13.1 min"
 [1] "rep_no = 1, iteration: 11000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 12.4 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 11.7 min"
 [1] "rep_no = 1, iteration: 12000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 11.2 min"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 10.4 min"
 [1] "rep_no = 1, iteration: 13000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 9.7 min"
+[1] "The last 1000 iter= 4.4 min, Est. Time to go= 30.7 min"
 [1] "rep_no = 1, iteration: 14000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 8.2 min"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 8.4 min"
 [1] "rep_no = 1, iteration: 15000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 6.9 min"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 7 min"
 [1] "rep_no = 1, iteration: 16000 / 20000"
 [1] "The last 1000 iter= 1.4 min, Est. Time to go= 5.6 min"
 [1] "rep_no = 1, iteration: 17000 / 20000"
-[1] "The last 1000 iter= 1.4 min, Est. Time to go= 4.1 min"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 4.2 min"
 [1] "rep_no = 1, iteration: 18000 / 20000"
 [1] "The last 1000 iter= 1.4 min, Est. Time to go= 2.8 min"
 [1] "rep_no = 1, iteration: 19000 / 20000"

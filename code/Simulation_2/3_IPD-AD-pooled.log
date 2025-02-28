@@ -362,3 +362,26 @@ Type 'q()' to quit R.
 [1] "The last 1000 iter= 1.4 min, Est. Time to go= 10.9 min"
 [1] "i_rep = 300, iteration: 13000 / 20000"
 [1] "The last 1000 iter= 1.4 min, Est. Time to go= 9.5 min"
+[1] "i_rep = 300, iteration: 14000 / 20000"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 8.2 min"
+[1] "i_rep = 300, iteration: 15000 / 20000"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 6.8 min"
+[1] "i_rep = 300, iteration: 16000 / 20000"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 5.4 min"
+[1] "i_rep = 300, iteration: 17000 / 20000"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 4 min"
+[1] "i_rep = 300, iteration: 18000 / 20000"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 2.7 min"
+[1] "i_rep = 300, iteration: 19000 / 20000"
+[1] "The last 1000 iter= 1.3 min, Est. Time to go= 1.3 min"
+[1] "i_rep = 300, iteration: 20000 / 20000"
+[1] "The last 1000 iter= 1.4 min, Est. Time to go= 0 min"
+> 
+> ###### End of MCMC 
+> 
+> # Save the posterior draws after burn-in
+> SEQ = (burnin+1):(burnin+mainrun)
+> posterior_mu = draw_mu[SEQ,]
+> posterior_Sigma_theta = draw_Sigma_theta[SEQ,]
+> save(posterior_mu,posterior_Sigma_theta,file=paste0(RDataFolder,"/rep_",rep_no,".RData"))
+> 
