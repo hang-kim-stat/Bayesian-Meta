@@ -4,7 +4,7 @@ This repository follows the same structure as [the JASA reproducibility material
 
 ## `code` Directory 
 
-### Codes for Simulation Studies**
+### Codes for Simulation Studies
 
 The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. 
 
