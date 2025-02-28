@@ -4,7 +4,7 @@ This repository follows the same structure as [the JASA reproducibility material
 
 ## `code` directory 
 
-### Codes for simulation studies 
+### Codes for **simulation studies**
 
 The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. 
 
@@ -27,13 +27,14 @@ Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes 
   - The current default setting `DrawDiagnostics = TRUE` on Line 14 will produce the diagnostic plot (while running MCMC) and store it in `output/[SimulationNumber]/[MethodName]/DiagnosticPlot` directory.
   - `W_Summary.R` generates two tables used for Figure 3 in the main text and Tables 5 and 6 in the Supplemenary Materials. 
 
-### Code for I-WIP meta-analysis study
+### Code for **I-WIP meta-analysis study**
 
 `I-WIP_Application_CodeOnly.R` is the code we used to apply our proposed method to the real data. 
   - The data are not released here for [  REASON ].  
 
 
 ## `data` directory 
+
 
 
 ## `output` directory 
