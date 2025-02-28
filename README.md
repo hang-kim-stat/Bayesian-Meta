@@ -6,7 +6,7 @@ This repository follows the same structure as [the JASA reproducibility material
 
 ### Codes for Simulation Studies
 
-The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. 
+The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. Each R code has comments that explain functions referring to the relevant equations in the main text. 
 
 Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes for four methods: 
   - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
@@ -24,7 +24,7 @@ Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes 
   - Posterior values from the MCMC (after burn-in) are stored in `output/[MethodName]/RData` directory.
       - If you run an R code in the `code` directory, the output file for the 1st simulation data `rep_1.RData` will be produced.
       - For your convenience, the output files for all 300 simulation studies are already stored in the  `output/[MethodName]/RData` directory.
-  - The current default setting `DrawDiagnostics = TRUE` on Line 14 will produce the diagnostic plot (while running MCMC) and store it in `output/[Simulation_Number]/[MethodName]/DiagnosticPlot` directory.
+  - The current default setting `DrawDiagnostics = TRUE` on Line 14 will produce the diagnostic plot of $\mathbf{\mu}$ (while running MCMC) and store it in `output/[Simulation_Number]/[MethodName]/DiagnosticPlot` directory.
   - `W_Summary.R` generates two tables used for Figure 3 in the main text and Tables 5 and 6 in the Supplementary Materials. 
 
 ### Code for **I-WIP Meta-analysis Study**
