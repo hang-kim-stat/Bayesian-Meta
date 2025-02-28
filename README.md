@@ -29,8 +29,9 @@ Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes 
 
 ### Code for **I-WIP Meta-analysis Study**
 
-`I-WIP_Application_CodeOnly.R` is the code we used to apply our proposed method to the real data. 
-  - The data are not released here for [ REASON ].  
+The script `I-WIP_Application_CodeOnly.R` was used to implement our proposed method on the real dataset.
+  - Due to public access restrictions, the data were not released here.
+  - The complete dataset is available from the data custodian (Queen Mary University of London) at [smd-iwipdata@qmul.ac.uk](mailto:smd-iwipdata@qmul.ac.uk), subject to the Terms and Conditions of Data Transfer.
 
 ## `data` directory 
 
