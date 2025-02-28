@@ -5,7 +5,7 @@ The directory contains the two simulation datasets (`SimulationData_1.RData` and
 
 ### Objects in `SimulationData_X.RData`
 
-  - `theta_l_mat` x by x matrix of ... 
+  - `theta_l_mat` x by x matrix of μ<sup>+</sup>
   - `theta_hat_l_mat`
   - `X_cube`
   - `Y_mat`
