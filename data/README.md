@@ -11,16 +11,17 @@ As introduced in Section 4.1 and 4.2 in the main text, we assume L=40 studies, e
 
 The objects in the data file are explained with the notations in the main text. 
   - **True parameters**
-      - `theta_l_mat`: (L x p) matrix containing of <b>θ</b><sub>l<sub> of L=40 studies
-      - `true_kappa`: κ<sub>l<sub> as the variance of ε<sub>li<sub> (for Simulation Study 1 only)
-      - `true_mu`: <b>μ</b> as the mean of <b>θ</b><sub>l<sub>
+      - `theta_l_mat`: (L x p) matrix containing <b>θ</b><sub>l</sub> of L studies
+      - `true_kappa`: κ<sub>l<sub> as the variance of ε<sub>li</sub> (for Simulation Study 1 only)
+      - `true_mu`: <b>μ</b> as the mean of <b>θ</b><sub>l</sub>
   - **IPD**
-      - `X_cube`: (L x p) matrix of X<sup>+</sup>
-      - `Y_mat`: (L x p) matrix of y
+      - `X_cube`: (L x n<sub>l</sub> x p) cube containing the design matrice <b>X<b><sub>l</sub> of L studies
+      - `Y_mat`: (L x n<sub>l</sub>) matrix containing the responses <b>y<b> of L studies
   - `type_vec`: vector of 
-  -  `beta_mat`: (L x p) matrix of β
+  
   - **AD**
-  -  `theta_hat_l_mat`: (L x p) matrix of θ̂<sup>+</sup>
-  -  `V_beta_cube`: (L x p) matrix of V<sub>β<sub>
+      - `beta_mat`: (L x p) matrix containing the working model solution β of L studies
+      - `V_beta_cube`: (L x p x p) cube containing the working variance V<sub>β,l</sub> of L studies 
+      
   
   
