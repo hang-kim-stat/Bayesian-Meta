@@ -4,7 +4,7 @@ This repository follows the same structure as [the JASA reproducibility material
 
 ## `code` Directory 
 
-The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. Each R code has comments that explain functions referring to the relevant equations in the main text. 
+The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. Each R code contains comments for some main functions referring to the relevant equations in the main text. 
 
 ### Codes for Simulation Studies
 
