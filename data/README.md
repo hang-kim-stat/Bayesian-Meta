@@ -10,12 +10,17 @@ As introduced in Section 4.1 and 4.2 in the main text, we assume L=40 studies, e
 ### Objects in `SimulationData_X.RData`
 
 The objects in the data file are explained with the notations in the main text. 
-  - `theta_l_mat`: (L x p) matrix of μ<sup>+</sup>
-  - `theta_hat_l_mat`: (L x p) matrix of θ̂<sup>+</sup>
-  - `X_cube`: (L x p) matrix of X<sup>+</sup>
-  - `Y_mat`: (L x p) matrix of y
+  - **True parameters**
+      - `theta_l_mat`: (L x p) matrix containing of <b>θ</b><sub>l<sub> of L=40 studies
+      - `true_kappa`: κ<sub>l<sub> as the variance of ε<sub>li<sub> (for Simulation Study 1 only)
+      - `true_mu`: <b>μ</b> as the mean of <b>θ</b><sub>l<sub>
+  - **IPD**
+      - `X_cube`: (L x p) matrix of X<sup>+</sup>
+      - `Y_mat`: (L x p) matrix of y
   - `type_vec`: vector of 
   -  `beta_mat`: (L x p) matrix of β
+  - **AD**
+  -  `theta_hat_l_mat`: (L x p) matrix of θ̂<sup>+</sup>
   -  `V_beta_cube`: (L x p) matrix of V<sub>β<sub>
-  -  `true_mu`: true value <b>μ</b>
-  -  `true_kappa`: true variance κ (for Simulation Study 1 only) 
+  
+  
