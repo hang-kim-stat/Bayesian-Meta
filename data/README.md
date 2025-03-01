@@ -16,7 +16,7 @@ The objects in the data file are explained with the notations in the main text.
       - `true_mu`: <b>μ</b> as the mean of <b>θ</b><sub>l</sub>
   - **IPD**
       - `X_cube`: (L x n<sub>l</sub> x p) cube containing the design matrice <b>X</b><sub>l</sub> of L studies
-      - `Y_mat`: (L x n<sub>l</sub>) matrix containing the responses <b>y<b><sub>l</sub> of L studies
+      - `Y_mat`: (L x n<sub>l</sub>) matrix containing the responses <b>y</b><sub>l</sub> of L studies
   - `type_vec`: vector of 
   
   - **AD**
