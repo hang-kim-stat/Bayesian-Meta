@@ -10,8 +10,8 @@ The directory has R codes for two simulation studies in Section 4 of the main te
 
 Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes for four methods: 
   - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
-  - `2_IPD-AD.R` Proposed meta-analysis with 10 IPD studies and 30 AD studies
-  - `3_IPD-AD-pooled.R` Proposed meta-analysis with a mis-specification density ratio model
+  - `2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
+  - `3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a mis-specification density ratio model
   - `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
 
 **Input**
