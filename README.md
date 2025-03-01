@@ -4,9 +4,9 @@ This repository follows the same structure as [the JASA reproducibility material
 
 ## `code` Directory 
 
-### Codes for Simulation Studies
-
 The directory has R codes for two simulation studies in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. Each R code has comments that explain functions referring to the relevant equations in the main text. 
+
+### Codes for Simulation Studies
 
 Each simulation study folder (`Simulation_1` and `Simulation_2`) contains codes for four methods: 
   - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
