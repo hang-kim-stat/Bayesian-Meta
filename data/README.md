@@ -17,11 +17,9 @@ The objects in the data file are explained with the notations in the main text.
   - **IPD**
       - `X_cube`: (L x n<sub>l</sub> x p) cube containing the design matrice <b>X</b><sub>l</sub> of L studies
       - `Y_mat`: (L x n<sub>l</sub>) matrix containing the responses <b>y</b><sub>l</sub> of L studies
-  - `type_vec`: vector of 
-  
   - **AD**
       - `beta_mat`: (L x p) matrix containing the working model solution β&#770;<sub>l</sub> of L studies
-      - `V_beta_cube`: (L x p x p) cube containing the working variance V<sub>β,l</sub> of L studies 
-      
-  
-  
+      - `V_beta_cube`: (L x p x p) cube containing the working variance V<sub>β,l</sub> of L studies
+      - `type_vec`: vector of types of L studies
+          - The values 1, 2, and 3 denote AD Type 1, 2, and 3, respectively.
+          - The value 4 denotes IPD.
