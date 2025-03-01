@@ -12,7 +12,7 @@ As introduced in Section 4.1 and 4.2 in the main text, we assume L=40 studies, e
 The objects in the data file are explained with the notations in the main text. 
   - **True parameters**
       - `theta_l_mat`: (L x p) matrix containing <b>θ</b><sub>l</sub> of L studies
-      - `true_kappa`: κ<sub>l<sub> as the variance of ε<sub>li</sub> (for Simulation Study 1 only)
+      - `true_kappa`: κ<sub>l</sub> as the variance of ε<sub>li</sub> (for Simulation Study 1 only)
       - `true_mu`: <b>μ</b> as the mean of <b>θ</b><sub>l</sub>
   - **IPD**
       - `X_cube`: (L x n<sub>l</sub> x p) cube containing the design matrice <b>X<b><sub>l</sub> of L studies
