@@ -7,14 +7,14 @@ rm(list=ls())
 library(MASS)
 
 ######################################## 
+n_rep = 300     # number of replicates 
+L = 40          # total number of studies 
+n_sample = 200  # sample size of each study 
+
 # For model: Y_li = X_li theta_l + e_li 
 true_mu = c(0.5, 1, 0.5, 0.25)  # theta_l ~ N( mu, Sigma )
 true_Sigma_theta = rep(1,4)
 true_kappa = 1  # e_li ~ N( 0, kappa )
-
-n_rep = 300     # number of replicates 
-L = 40          # total number of studies 
-n_sample = 200  # sample size of each study 
 
 p_theta = length(true_mu) ; p_beta = p_theta
 

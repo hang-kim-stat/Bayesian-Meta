@@ -7,18 +7,18 @@ rm(list=ls())
 library(MASS)
 
 ######################################## 
+n_rep = 300     # number of replicates 
+L = 40          # total number of studies 
+n_sample = 200  # sample size of each study 
+
 # Model setting
 true_mu = c(log(0.4/(1-0.4)), 0.5, -0.3, -0.6) 
-true_Sigma_theta = rep(0.1,p_theta)
+true_Sigma_theta = rep(0.1,4)
 
 # biased access
 alpha_biased_access = c(-0.75,0.95) 
 fr_biased = rep(0, n_rep)
 RR = NULL
-
-n_rep = 300     # number of replicates 
-L = 40          # total number of studies 
-n_sample = 200  # sample size of each study 
 
 p_theta = length(true_mu) ; p_beta = p_theta 
 

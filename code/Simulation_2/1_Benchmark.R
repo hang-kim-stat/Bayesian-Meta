@@ -125,7 +125,7 @@ for (i_iter in 1:n_iter) {
   #  and plot mu's (if DrawDiagnostics==TRUE)  
   ################################
   
-  if (i_iter%%100==0) {
+  if (i_iter%%1000==0) {
     
     print( paste0( "rep_no = ",rep_no, ", iteration: ",i_iter," / ",n_iter) )
     Currenttime = proc.time()[3]
@@ -146,7 +146,7 @@ for (i_iter in 1:n_iter) {
       
     } # if (DrawDiagnostics==T)
     
-  } # if (i_iter%%100)
+  } # if (i_iter%%1000)
   
 } # for (i_iter)
 

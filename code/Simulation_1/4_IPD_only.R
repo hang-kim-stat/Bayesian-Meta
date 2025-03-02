@@ -161,7 +161,7 @@ for (i_iter in 1:n_iter) {
       
     } # if (DrawDiagnostics==T)
     
-  } # if (i_iter%%100)
+  } # if (i_iter%%1000)
   
 } # for (i_iter)
 

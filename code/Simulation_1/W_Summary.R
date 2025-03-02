@@ -1,7 +1,7 @@
 rm(list = ls())
 
 #####################################
-# Load simulation truth of Simulatino Study 1 for comparison 
+# Load simulation truth of Simulation Study 1 for comparison 
 #####################################
 
 load("../../data/SimulationData_1.RData")
