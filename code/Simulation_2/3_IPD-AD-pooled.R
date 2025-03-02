@@ -275,7 +275,7 @@ for (i_iter in 1:n_iter) {
   
   if (i_iter%%1000==0) {
     
-    print( paste0( "i_rep = ",i_rep, ", iteration: ",i_iter," / ",n_iter) )
+    print( paste0( "rep_no = ",rep_no, ", iteration: ",i_iter," / ",n_iter) )
     Currenttime = proc.time()[3]
     LastBatch = Currenttime-Prevtime ; Time_to_Go = (n_iter-i_iter)*(LastBatch/1000)
     Prevtime = Currenttime
