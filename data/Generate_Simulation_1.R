@@ -5,7 +5,6 @@
 rm(list=ls())
 
 library(MASS)
-seed0 = 33
 
 ######################################## 
 # For model: Y_li = X_li theta_l + e_li 
@@ -28,7 +27,7 @@ for (i_rep in 1:n_rep){
 	print(" ============================================== ")	
 	print("                                                ")
   
-	set.seed(i_rep+seed0) ; print(i_rep)
+	set.seed(i_rep+33) ; print(i_rep)
  
 	####################
 	# prepare storage 
@@ -52,7 +51,7 @@ for (i_rep in 1:n_rep){
 	
 	for (i_study in 1:L) {
 		
-	 # theta_l ~ N( mu, Sigma )
+	  # theta_l ~ N( mu, Sigma )
 		theta_l_mat[i_study,] = rnorm(n=p_theta, mean=true_mu, sd=sqrt(true_Sigma_theta))
     
 		X_cube[i_study,,1] = rep(1, n_sample) 
