@@ -31,7 +31,7 @@ Each simulation-study directory (`Simulation_1` and `Simulation_2`) contains cod
 
 The script `I-WIP_Application_CodeOnly.R` was used to implement our proposed method on the real dataset.
   - Due to public access restrictions, the data were not released here.
-  - The complete dataset is available from the data custodian (Queen Mary University of London) at [smd-iwipdata@qmul.ac.uk](mailto:smd-iwipdata@qmul.ac.uk), subject to the Terms and Conditions of Data Transfer.
+  - The complete dataset is available from the data custodian (OOO) at OOO@OOO, subject to the Terms and Conditions of Data Transfer.
 
 ## `data` directory 
 
