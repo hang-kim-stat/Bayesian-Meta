@@ -2,70 +2,51 @@
 
 This repository follows the same structure as [the JASA reproducibility materials template on GitHub](https://github.com/jasa-acs/repro-template).
 
-## `code` directory 
+## `Code` directory 
 
-The directory has R codes for two simulation settings in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. Each R code contains comments for some main functions referring to the relevant equations in the main text. 
+The directory has R codes for two simulation studies in Section 4 of the main text, the  I-WIP meta-analysis study in Section 5, and generation for figures and tables. 
 
 ### `Simulation_1` directory
 
 The directory contains R codes for simulation study in Section 4.1 to implement four methods: 
-  - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
-  - `2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
-  - `3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a mis-specification density ratio model
-  - `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
+  - `Simulation_1/1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
+  - `Simulation_1/2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
+  - `Simulation_1/3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a mis-specification density ratio model
+  - `Simulation_1/4_IPD_only.R` Random-effects analysis using only 10 IPD studies
 
-**Input**
-  - The R codes use the simulation data stored in the `data` directory.
+**Input and output**
+  - Each R code uses the simulation data `../../Data/SimulationData_1.RData`.
   - The default setting is to import the 1st simulation dataset (out of 300 repeated simulations) and run the MCMC. 
-      - Other simulation dataset can be used by changing `rep_no` (in Line 3 of each R code) to a number from 1 to 300.
-      - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel. 
-
-**Output**
-  - Posterior values from the MCMC (after burn-in) are stored in `output/[Simulation_X]/[MethodName]/RData` directory.
+      - One can use other simulation dataset by changing `rep_no` (in Line 3 of each R code) to a number from 1 to 300.
+      - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel.
+  - Posterior values from the MCMC (after burn-in) are stored in `../../Output/Simulation_1/[MethodName]/RData` directory.
       - If you run an R code in the `code` directory with the default setting, the output file for the 1st simulation data `rep_1.RData` will be produced.
-      - For your convenience, the output files for all 300 simulation studies are already stored in the  `output/[Simulation_X]/[MethodName]/RData` directory.
-  - The current default setting `DrawDiagnostics = TRUE` on Line 14 of each R code will produce the diagnostic plot of **μ** = E(**θ**<sub>l</sub>) (while running MCMC) and store it in `output/[Simulation_X]/[MethodName]/DiagnosticPlot` directory.
-  - `W_Summary.R` generates two tables used for Figure 3 in the main text and Tables 5 and 6 in the Supplementary Materials. 
+      - For your convenience, the output files for all 300 simulation studies are already stored in the  `Output/Simulation_1/[MethodName]/RData` directory.
+  - The current default setting `DrawDiagnostics = TRUE` on Line 14 of each R code will produce the diagnostic plot of **μ** = E(**θ**<sub>l</sub>) (while running MCMC) and store it in `../../Output/Simulation_1/[MethodName]/DiagnosticPlot` directory.
 
 ### `Simulation_2` directory
 
 The directory contains R codes for simulation study in Section 4.2. The structure of the direction is the same with that of `Simulation_1` directory.
 
-Except the change of regression model for analyzing 
+### `I-WIP_Application_CodeOnly.R` file 
 
-`Simulation_1` and `Simulation_2` contains 
-
-Codes for Simulation Studies
-
-`Simulation_1` and `Simulation_2` contains codes for simulation study in Section 4.1 and 4.2, respectively, to implement four methods: 
-  - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
-  - `2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
-  - `3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a mis-specification density ratio model
-  - `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
-
-
-
-
-### Code for I-WIP Meta-analysis Study
-
-The script `I-WIP_Application_CodeOnly.R` was used to implement our proposed method on the real dataset.
+The R script was used to implement our proposed method on the real dataset for I-WIP meta-analysis study in Section 5. 
   - Due to public access restrictions, the data were not released here.
   - The complete dataset is available from the data custodian (OOO) at OOO@OOO, subject to the Terms and Conditions of Data Transfer.
 
-
-
-
-## `data` directory 
+## `Data` directory 
 
 The directory contains the two simulation datasets (`SimulationData_1.RData` and `SimulationData_2.RData`) used for Section 4.1 and 4.2 of the main text, respectively.
   - The datasets were generated by running `Generate_Simulation_1.R` and `Generate_Simulation_2.R`.
   - `README.md` in the directory explains the variable names in the code by referring to the notations in the main text.  
 
-## `output` directory 
+## `Output` directory 
 
-### `[Simulation_k]/[MethodName]` directory
+### `Simulation_1` directory
 
-Directory `[Simulation_k]/[MethodName]` contains the output of Simulation Setting k in Section 4. For each simulation setting and each method, two subdirectories are provided. 
+`Simulation_1` directory contains four directories, storing MCMC outputs from each method. 
+
+A directory for each method contains two directories: 
   - `RData` directory
       - `rep_x.RData` contains 10,000 posterior draws of **μ** and **Σ** (after burn-in) for the x-th simulation data (out of 300). 
   - `DiagnosticPlot` directory

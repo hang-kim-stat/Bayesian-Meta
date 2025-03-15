@@ -5,7 +5,7 @@ rep_no = 1
 set.seed(rep_no+1000)
 
 # create output folder if it does not exist
-OutputFolder = "../../output/Simulation_1/3_IPD-AD-pooled"
+OutputFolder = "../../Output/Simulation_1/3_IPD-AD-pooled"
 if (!file.exists(OutputFolder)){ dir.create(OutputFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
 RDataFolder = paste0(OutputFolder,"/RData")
 if (!file.exists(RDataFolder)){ dir.create(RDataFolder, showWarnings = TRUE, recursive = FALSE, mode = "0777") }
@@ -24,7 +24,7 @@ library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 # Load 300 repeated datasets of Simulation Study 1
 #####################################
 
-load("../../data/SimulationData_1.RData")
+load("../../Data/SimulationData_1.RData")
 ls() 
 # For the meaning of each object, refer to README in "data" folder of the github repository
 
