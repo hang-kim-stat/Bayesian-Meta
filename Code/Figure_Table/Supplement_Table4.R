@@ -58,5 +58,5 @@ for (i_method in 1:length(Method_list)){
 } # for (i_method in 1:4)
 
 ##############################
-write.csv(Table4,file="../../output/Figure_Table/Supplement_Table4.csv")
+write.csv(Table4,file="../../Output/Figure_Table/Supplement_Table4.csv")
 ##############################
