@@ -1,17 +1,15 @@
 rm(list=ls())
 
 # Load necessary libraries
-library(ggplot2)
+library(ggplot2) 
 library(patchwork) # For arranging plots side by side
 library(dplyr)
 library(tidyr)
 library(scales)
 
-# Set text size
-SIZE_title.y = 18 ; SIZE_title.x = 16 ; SIZE_text.y = 16 ; SIZE_text.x = 18 ; SIZE_title = 22 ; SIZE_b = 10
-
-# Define greek labels for the legend
-greek_labels <- c(expression(mu[0]), expression(mu[1]), expression(mu[2]), expression(mu[12]))
+# Graphical options
+SIZE_title.y = 18 ; SIZE_title.x = 16 ; SIZE_text.y = 16 ; SIZE_text.x = 18 ; SIZE_title = 22 ; SIZE_b = 10 # Set text size
+greek_labels <- c(expression(mu[0]), expression(mu[1]), expression(mu[2]), expression(mu[12])) # Define Greek labels for the legend
 
 ##############################################################################
 
@@ -38,7 +36,7 @@ Table4_figure <- data.frame(Method = Table4_label[,"Method"], Parameter = Table4
 # Set the order of the Method variable
 Table4_figure[,"Method"] <- factor(Table4_figure[,"Method"], levels = c("Benchmark", "IPD-AD", "IPD-AD(pooled)", "IPD only"), labels = c("Bench\nmark", "IPD-AD", "IPD-AD\n(pooled)", "IPD\nonly") )
 
-# Plot for Bias with legend
+# Plot for Bias
 plot_bias1 <- ggplot(Table4_figure, aes(x = Method, y = Bias, shape = Parameter, color = Parameter)) +
  geom_point(size = 5) +
  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
@@ -55,7 +53,7 @@ plot_bias1 <- ggplot(Table4_figure, aes(x = Method, y = Bias, shape = Parameter,
   legend.position = "none"
  )
 
-# Plot for MSE with connecting lines, without legend, and with adjusted text size
+# Plot for MSE
 plot_mse1 <- ggplot(Table4_figure, aes(x = Method, y = MSE, group = Parameter, shape = Parameter, color = Parameter)) +
  geom_point(size = 5) + 
  geom_line(linetype = "dashed") +
@@ -67,14 +65,13 @@ plot_mse1 <- ggplot(Table4_figure, aes(x = Method, y = MSE, group = Parameter, s
   plot.title = element_text(size = SIZE_title, face = "bold", hjust = 0.5, margin = margin(b = SIZE_b)),
   legend.position = "none",
   axis.title.x = element_blank(),
-  # axis.title.y = element_text(size = 24, face = "bold", margin = margin(r = 20)),
   axis.title.y = element_blank(),
   axis.text.x = element_text(size = SIZE_text.x),
   axis.text.y = element_text(size = SIZE_text.y),
   legend.text = element_text(size = 16)    
  )
 
-# Plot for 95% Coverage without legend and with adjusted text size
+# Plot for 95% Coverage
 plot_95cover1 <- ggplot(Table4_figure, aes(x = Method, y = Coverage, shape = Parameter, color = Parameter)) +
  geom_point(size = 5) +
  geom_hline(yintercept = 0.95, linetype = "dashed", color = "black") +
@@ -85,7 +82,6 @@ plot_95cover1 <- ggplot(Table4_figure, aes(x = Method, y = Coverage, shape = Par
  theme(
   plot.title = element_text(size = SIZE_title, face = "bold", hjust = 0.5, margin = margin(b = SIZE_b)),
   axis.title.x = element_blank(),
-  # axis.title.y = element_text(size = 24, face = "bold", margin = margin(r = 20)),
   axis.title.y = element_blank(),
   axis.text.x = element_text(size = SIZE_text.x),
   axis.text.y = element_text(size = SIZE_text.y),
@@ -134,7 +130,7 @@ plot_bias2 <- ggplot(Table5_figure, aes(x = Method, y = Bias, shape = Parameter,
   legend.text = element_text(size = 16)    
  )
 
-# Plot for MSE with connecting lines, without legend, and with adjusted text size
+# Plot for MSE
 plot_mse2 <- ggplot(Table5_figure, aes(x = Method, y = MSE, group = Parameter, shape = Parameter, color = Parameter)) +
  geom_point(size = 5) + 
  geom_line(linetype = "dashed") +
@@ -151,7 +147,7 @@ plot_mse2 <- ggplot(Table5_figure, aes(x = Method, y = MSE, group = Parameter, s
   legend.text = element_text(size = 16)   
  )
 
-# Plot for 95% Coverage without legend and with adjusted text size
+# Plot for 95% Coverage
 plot_95cover2 <- ggplot(Table5_figure, aes(x = Method, y = Coverage, shape = Parameter, color = Parameter)) +
  geom_point(size = 5) +
  geom_hline(yintercept = 0.95, linetype = "dashed", color = "black") +

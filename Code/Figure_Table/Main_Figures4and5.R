@@ -1,10 +1,6 @@
 rm(list=ls())
 
 library(xlsx) ; library(gplots)
-#  ; library(MASS) ;  ; library(Hmisc) ; library(rlist) ; library(meta)
-
-# if (!file.exists("Plot_Reference")){ dir.create("Plot_Reference", showWarnings = TRUE, recursive = FALSE, mode = "0777") }
-# if (!file.exists("Plot_Manuscript")){ dir.create("Plot_Manuscript", showWarnings = TRUE, recursive = FALSE, mode = "0777") }
 
 #############################
 
@@ -48,14 +44,7 @@ ProbComparison = rep(0,3)
 ProbComparison[1] = mean( posterior_mu[,6] > posterior_mu[,5] )  # normal to overweight 
 ProbComparison[2] = mean( posterior_mu[,6] > posterior_mu[,7] )  # obese to overweight
 ProbComparison[3] = mean( ( posterior_mu[,6] > posterior_mu[,5] ) & ( posterior_mu[,6] > posterior_mu[,7] ) )
-ProbComparison
-# [1] 0.9470 0.9374 0.9090
-
-# ##
-# 
-# TABLE = rbind(L95_IPD,PostMean_IPD,U95_IPD,L95_IPD_AD,PostMean_IPD_AD,U95_IPD_AD)
-# rownames(TABLE) = c("L95_IPD","PostMean_IPD","U95_IPD","L95_IPD_AD","PostMean_IPD_AD","U95_IPD_AD")
-# write.xlsx(TABLE, file=paste0("Plot_Reference/Result_",RESULT_NAME,".xlsx"))
+ProbComparison # [1] 0.9470 0.9374 0.9090
 
 #############################
 
@@ -64,7 +53,7 @@ ProbComparison
 FixedResult = read.xlsx(file="../../Output/Application_Study/FixedEffect.xlsx", sheetName="Sheet1")
 row.names(FixedResult) = FixedResult[,1] ; FixedResult = FixedResult[,2:4]
 
-######################################################################################
+#############################
 
 # Figure 4 of the main text
 
@@ -76,8 +65,7 @@ par(mfrow=c(1,1),family="AppleGothic",mgp = c(2, 0.5, 0),mai=c(0.45,1,0.1,0.2)) 
 
 plot(c(-1.4, 0.2), c(0, 6), type = "n", xlab = "Weight Gain Reduction (kg)", ylab = "", xaxt = "n", yaxt = "n", bty = "n")
 box()
-# Add horizontal lines for effect sizes
-segments(L95_IPD[5:7], c(5,3,1)+PlusMinus, U95_IPD[5:7], c(5,3,1)+PlusMinus, lty = "dashed", col="blue",lwd=1.2) # IPD-only # lty = 2 for dashed lines
+segments(L95_IPD[5:7], c(5,3,1)+PlusMinus, U95_IPD[5:7], c(5,3,1)+PlusMinus, lty = "dashed", col="blue",lwd=1.2) # IPD-only 
 segments(L95_IPD_AD[5:7], c(5,3,1), U95_IPD_AD[5:7], c(5,3,1), col="red",lwd=1.2)  # IPD-AD
 segments(FixedResult[,"X95.cr.l"], c(5,3,1)-PlusMinus, FixedResult[,"X95.cr.r"], c(5,3,1)-PlusMinus, lty = "dotted", col="brown",lwd=1.2)  # Fixed effect model
 # Add points for effect sizes
