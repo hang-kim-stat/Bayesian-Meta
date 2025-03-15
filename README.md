@@ -2,13 +2,13 @@
 
 This repository follows the same structure as [the JASA reproducibility materials template on GitHub](https://github.com/jasa-acs/repro-template).
 
-## `code` Directory 
+## `code` directory 
 
 The directory has R codes for two simulation settings in Section 4 of the main text and our I-WIP meta-analysis study in Section 5. Each R code contains comments for some main functions referring to the relevant equations in the main text. 
 
-### Codes for Simulation Studies
+### `Simulation_1` directory
 
-Each simulation-study directory (`Simulation_1` and `Simulation_2`) contains codes for four methods: 
+The directory contains R codes for simulation study in Section 4.1 to implement four methods: 
   - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
   - `2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
   - `3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a mis-specification density ratio model
@@ -27,11 +27,33 @@ Each simulation-study directory (`Simulation_1` and `Simulation_2`) contains cod
   - The current default setting `DrawDiagnostics = TRUE` on Line 14 of each R code will produce the diagnostic plot of **μ** = E(**θ**<sub>l</sub>) (while running MCMC) and store it in `output/[Simulation_X]/[MethodName]/DiagnosticPlot` directory.
   - `W_Summary.R` generates two tables used for Figure 3 in the main text and Tables 5 and 6 in the Supplementary Materials. 
 
+### `Simulation_2` directory
+
+The directory contains R codes for simulation study in Section 4.2. The structure of the direction is the same with that of `Simulation_1` directory.
+
+Except the change of regression model for analyzing 
+
+`Simulation_1` and `Simulation_2` contains 
+
+Codes for Simulation Studies
+
+`Simulation_1` and `Simulation_2` contains codes for simulation study in Section 4.1 and 4.2, respectively, to implement four methods: 
+  - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
+  - `2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
+  - `3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a mis-specification density ratio model
+  - `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
+
+
+
+
 ### Code for I-WIP Meta-analysis Study
 
 The script `I-WIP_Application_CodeOnly.R` was used to implement our proposed method on the real dataset.
   - Due to public access restrictions, the data were not released here.
   - The complete dataset is available from the data custodian (OOO) at OOO@OOO, subject to the Terms and Conditions of Data Transfer.
+
+
+
 
 ## `data` directory 
 
