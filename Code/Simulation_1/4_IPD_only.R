@@ -26,7 +26,7 @@ library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 
 load("../../Data/SimulationData_1.RData")
 ls() 
-# For the meaning of each object, refer to README in "data" folder of the github repository
+# For the meaning of each object, refer to README_data in "Data" folder of the github repository
 
 L = dim(SimulData[[1]]$X_cube)[[1]] # total number of studies (IPD + AD)
 p_theta = dim(SimulData[[1]]$X_cube)[[3]] ; p_beta = p_theta 

@@ -26,7 +26,7 @@ library(ModelMetrics) ; library(mvtnorm) ; library(invgamma) ; library(MCMCpack)
 
 load("../../Data/SimulationData_2.RData")
 ls() 
-# For the meaning of each object, refer to README in "data" folder of the github repository
+# For the meaning of each object, refer to README_data in "Data" folder of the github repository
 
 #####################################
 # Functions                         # 

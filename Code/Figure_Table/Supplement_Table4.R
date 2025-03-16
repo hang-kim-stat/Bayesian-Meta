@@ -4,7 +4,7 @@ rm(list = ls())
 # Load simulation truth of Simulation Study 1 for comparison 
 #####################################
 
-load("../../data/SimulationData_1.RData")
+load("../../Data/SimulationData_1.RData")
 p_mu = length(true_mu)
 
 #####################################
@@ -20,7 +20,7 @@ for (i_method in 1:length(Method_list)){
   
   for (rep_no in 1:n_rep){
     
-    load(paste0("../../output/Simulation_1/",Method_list[i_method],"/RData/rep_",rep_no,".RData"))
+    load(paste0("../../Output/Simulation_1/",Method_list[i_method],"/RData/rep_",rep_no,".RData"))
     
     PostMean[rep_no,1:p_mu] = apply(posterior_mu,2,mean)
     PostVar[rep_no,1:p_mu] = apply(posterior_mu,2,var)
