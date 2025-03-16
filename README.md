@@ -9,7 +9,7 @@ The directory has R script files for simulation studies in Section 4 of the main
 ### `Simulation_1` directory
 
 The directory contains R codes for the simulation study in Section 4.1 to implement four methods: 
-  - `1_Benchmark.R` Random-effects analysis using all 40 simulation IPD studies
+  - `1_Benchmark.R` Random-effects analysis using all 40 simulated IPD studies
   - `2_IPD-AD.R` **Proposed integrated random-effects analysis** with 10 IPD studies and 30 AD studies
   - `3_IPD-AD-pooled.R` Proposed integrated random-effects analysis with a misspecified density ratio model
   - `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
