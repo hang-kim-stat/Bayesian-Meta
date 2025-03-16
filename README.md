@@ -17,11 +17,11 @@ The directory contains R codes for the simulation study in Section 4.1 to implem
 **Input and output**
   - Each R script file uses the simulation data `Data/SimulationData_1.RData`
   - The default setting is to import the 1st simulation dataset (out of 300 repeated simulations) and run the MCMC. 
-      You can use another simulation dataset by changing `rep_no` (in Line 3 of each R code) to a number between 1 and 300.
+      - A reviewer can fit a method to another simulation dataset by changing `rep_no` (in Line 3 of each R code) to a number between 1 and 300.
       - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel.
   - Posterior values from the MCMC (after burn-in) are stored in `Output/Simulation_1/[Method]/RData` directory.
       - If you run the provided R code with the default setting, the output file for the 1st simulation data `rep_1.RData` will be produced.
-      - For editor's convenience, the output files for all 300 simulation studies are already stored in the  `Output/Simulation_1/[Method]/RData` directory.
+      - For reviewer's convenience, the output files for all 300 simulation studies are already stored in the  `Output/Simulation_1/[Method]/RData` directory.
   - The current default setting `DrawDiagnostics = TRUE` on Line 14 of each R script file will produce the diagnostic plot of **μ** = E(**θ**<sub>l</sub>) (while running MCMC) and store it in `Output/Simulation_1/[Method]/DiagnosticPlot` directory.
 
 ### `Simulation_2` directory
