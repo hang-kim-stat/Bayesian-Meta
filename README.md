@@ -4,7 +4,7 @@ This repository follows the same structure as [the JASA reproducibility material
 
 ## `Code` directory
 
-The directory has R codes for simulation studies in Section 4 of the main text, the I-WIP meta-analysis study in Section 5, and generation of figures and tables. 
+The directory has R script files for simulation studies in Section 4 of the main text, the I-WIP meta-analysis study in Section 5, and generation of figures and tables. 
 
 ### `Simulation_1` directory
 
@@ -15,18 +15,18 @@ The directory contains R codes for the simulation study in Section 4.1 to implem
   - `Simulation_1/4_IPD_only.R` Random-effects analysis using only 10 IPD studies
 
 **Input and output**
-  - Each R code uses the simulation data `Data/SimulationData_1.RData`.
+  - Each R script file uses the simulation data `Data/SimulationData_1.RData`
   - The default setting is to import the 1st simulation dataset (out of 300 repeated simulations) and run the MCMC. 
       - One can use other simulation dataset by changing `rep_no` (in Line 3 of each R code) to a number from 1 to 300.
       - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel.
-  - Posterior values from the MCMC (after burn-in) are stored in `Output/Simulation_1/[MethodName]/RData` directory.
-      - If you run an R code in the `code` directory with the default setting, the output file for the 1st simulation data `rep_1.RData` will be produced.
-      - For your convenience, the output files for all 300 simulation studies are already stored in the  `Output/Simulation_1/[MethodName]/RData` directory.
-  - The current default setting `DrawDiagnostics = TRUE` on Line 14 of each R code will produce the diagnostic plot of **μ** = E(**θ**<sub>l</sub>) (while running MCMC) and store it in `Output/Simulation_1/[MethodName]/DiagnosticPlot` directory.
+  - Posterior values from the MCMC (after burn-in) are stored in `Output/Simulation_1/[Method]/RData` directory.
+      - If you run an R code with the default setting, the output file for the 1st simulation data `rep_1.RData` will be produced.
+      - For your convenience, the output files for all 300 simulation studies are already stored in the  `Output/Simulation_1/[Method]/RData` directory.
+  - The current default setting `DrawDiagnostics = TRUE` on Line 14 of each R script file will produce the diagnostic plot of **μ** = E(**θ**<sub>l</sub>) (while running MCMC) and store it in `Output/Simulation_1/[Method]/DiagnosticPlot` directory.
 
 ### `Simulation_2` directory
 
-The directory contains R codes for simulation study in Section 4.2. The structure of the direction is the same with that of `Simulation_1` directory.
+The directory contains R codes for the simulation study in Section 4.2. The structure of this directory is the same with that of `Simulation_1` directory.
 
 ### `I-WIP_Application_CodeOnly.R` file
 
@@ -44,13 +44,17 @@ The directory contains the two simulation datasets (`SimulationData_1.RData` and
 
 ### `Simulation_1` directory
 
-`Simulation_1` directory contains four directories, storing MCMC outputs from each method. 
+`Simulation_1` directory contains the output of the four random effect models used in the simulation study of Section 4.1.
 
-A directory for each method `Output/Simulation1/[MethodName]` contains two directories: 
+The directory for the [Method] random effect analysis  `Output/Simulation1/[Method]` contains two directories: 
   - `RData` directory
       - `rep_X.RData` contains 10,000 posterior draws of **μ** and **Σ** (after burn-in) for the X-th simulation data (out of 300). 
   - `DiagnosticPlot` directory
       -  The diagnostic plot of **μ** will be stored here (while running MCMC).
+
+### `Simulation_2` directory
+
+`Simulation_2` directory contains the output of the four random effect models used in the simulation study of Section 4.2. The structure of this directory is the same with that of `Simulation_1` directory.
 
 ### `Application_Study` directory
   
