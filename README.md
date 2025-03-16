@@ -28,7 +28,7 @@ The directory contains R codes for the simulation study in Section 4.1 to implem
 
 The directory contains R codes for the simulation study in Section 4.2. Its structure is the same as that of `Simulation_1` directory.
 
-### `I-WIP_Application_CodeOnly.R` file
+### `Application_CodeOnly.R` file
 
 The R script was used to implement our proposed method on the real dataset for I-WIP meta-analysis study in Section 5. 
   - Due to public access restrictions, the data were not released here.
