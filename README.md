@@ -34,6 +34,14 @@ The R script was used to implement our proposed method on the real dataset for I
   - Due to public access restrictions, the data were not released here.
   - The complete dataset is available from the data custodian (OOO) at OOO@OOO, subject to the Terms and Conditions of Data Transfer.
 
+### `Figure_Table` directory
+
+The directory contains the R codes to generate tables in the Supplementary Material and figures in the main text. 
+  - `Supplement_Table4.R` generates Table 4 of the Supplementary Material, storing to `Output/Figure_Table/Supplement_Table4.csv`
+  - `Supplement_Table5.R` generates Table 5 of the Supplementary Material, storing to `Output/Figure_Table/Supplement_Table5.csv`
+  - `Main_Figure3.R` generates Figure 3 of the main text, storing to `Output/Figure_Table/Maintext_Figure3.png`
+  - `Main_Figures4and5.R` generates Figures 4 and 5 of the main text, storing to `Output/Figure_Table/Maintext_Figure4.png` and `Output/Figure_Table/Maintext_Figure5.png`
+    
 ## `Data` directory
 
 The directory contains the two simulated data files (`SimulationData_1.RData` and `SimulationData_2.RData`) used for Sections 4.1 and 4.2 of the main text, respectively.
@@ -70,4 +78,5 @@ The directory contains the tables in the Supplementary Material and the figures 
   - `Supplement_Table4.csv` Table 4 of the Supplementary Material, generated with `Code/Figure_Table/Supplement_Table4.R`
   - `Supplement_Table5.csv` Table 5 of the Supplementary Material, generated with `Code/Figure_Table/Supplement_Table5.R`
   - `Maintext_Figure3.png` Figure 3 of the main text, generated with `Code/Figure_Table/Main_Figure3.R`
-  - `Maintext_Figure3.png` Figure 3 of the main text, generated with `Code/Figure_Table/Main_Figure3.R`
+  - `Maintext_Figure4.png` Figure 4 of the main text, generated with `Code/Figure_Table/Main_Figures4and5`
+  - `Maintext_Figure5.png` Figure 5 of the main text, generated with `Code/Figure_Table/Main_Figures4and5`
