@@ -18,7 +18,7 @@ The directory contains R codes for the simulation study in Section 4.1 to implem
   - Each R script file uses the simulated data file `Data/SimulationData_1.RData`
   - With the default setting, each R code imports the **1st** simulated dataset (out of 300 repeated simulations) and apply each method. 
       - A reviewer can fit a method to another simulated dataset by changing `rep_no` (in Line 3 of each R code) to a number between 1 and 300.
-      - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel.
+      - The authors used a batch script to conduct the 300 repeated simulation studies in multiple cores in parallel.
   - Posterior values from the MCMC (after burn-in) are stored in `Output/Simulation_1/[Method]/RData` directory.
       - If you run the provided R code with the default setting, the output file for the 1st simulated data `rep_1.RData` will be produced.
       - For reviewer's convenience, the output files for all 300 simulation studies are already stored in the  `Output/Simulation_1/[Method]/RData` directory.
