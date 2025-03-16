@@ -15,9 +15,9 @@ The directory contains R codes for the simulation study in Section 4.1 to implem
   - `4_IPD_only.R` Random-effects analysis using only 10 IPD studies
 
 **Input and output**
-  - Each R script file uses the simulated data `Data/SimulationData_1.RData`
-  - The default setting is to import the 1st simulated data file (out of 300 repeated simulations) and run the MCMC. 
-      - A reviewer can fit a method to another simulated data file by changing `rep_no` (in Line 3 of each R code) to a number between 1 and 300.
+  - Each R script file uses the simulated data file `Data/SimulationData_1.RData`
+  - The default setting is to import the 1st simulated dataset (out of 300 repeated simulations) and run the MCMC. 
+      - A reviewer can fit a method to another simulated dataset by changing `rep_no` (in Line 3 of each R code) to a number between 1 and 300.
       - The authors used a batch script to run the 300 repeated simulations in multiple cores in parallel.
   - Posterior values from the MCMC (after burn-in) are stored in `Output/Simulation_1/[Method]/RData` directory.
       - If you run the provided R code with the default setting, the output file for the 1st simulated data `rep_1.RData` will be produced.
