@@ -26,7 +26,7 @@ The directory contains R codes for the simulation study in Section 4.1 to implem
 
 ### `Simulation_2` directory
 
-The directory contains R codes for the simulation study in Section 4.2. Its structure is the same as that of the `Simulation_1` directory.
+The directory contains R codes for the simulation study in Section 4.2. Its structure is the same as that of `Simulation_1` directory.
 
 ### `I-WIP_Application_CodeOnly.R` file
 
