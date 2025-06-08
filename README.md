@@ -32,7 +32,7 @@ The directory contains R codes for the simulation study in Section 4.2. Its stru
 
 The R script was used to implement our proposed method on the real dataset for I-WIP meta-analysis study in Section 5. 
   - Due to public access restrictions, the data were not released here.
-  - The complete dataset is available from the data custodian (OOO) at OOO@OOO, subject to the Terms and Conditions of Data Transfer.
+  - The complete dataset is available from the data custodian (Queen Mary University of London) at smd-iwipdata@qmul.ac.uk, subject to the Terms and Conditions of Data Transfer.
 
 ### `Figure_Table` directory
 
